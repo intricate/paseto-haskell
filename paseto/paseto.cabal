@@ -1,0 +1,111 @@
+cabal-version:       3.4
+name:                paseto
+version:             0.1.0.0
+synopsis:            Platform-Agnostic Security Tokens
+description:         Haskell implementation of PASETO (Platform-Agnostic Security Tokens).
+author:              Luke Nadur
+maintainer:          Luke Nadur
+license:             MIT
+license-file:        LICENSE
+category:            Cryptography
+build-type:          Simple
+extra-source-files:  README.md
+
+library
+  default-language:    Haskell2010
+  hs-source-dirs:      src
+  default-extensions:  DerivingStrategies
+                       GeneralizedNewtypeDeriving
+                       NamedFieldPuns
+                       NoImplicitPrelude
+                       OverloadedStrings
+
+  ghc-options:         -Wall
+                       -Wcompat
+                       -Wincomplete-record-updates
+                       -Wincomplete-uni-patterns
+                       -Wpartial-fields
+                       -Wredundant-constraints
+                       -Wunused-packages
+
+  exposed-modules:     Crypto.Paseto
+                       Crypto.Paseto.Keys
+                       Crypto.Paseto.Keys.V3
+                       Crypto.Paseto.Mode
+                       Crypto.Paseto.PreAuthenticationEncoding
+                       Crypto.Paseto.Protocol.V3
+                       Crypto.Paseto.Protocol.V4
+                       Crypto.Paseto.ScrubbedBytes
+                       Crypto.Paseto.Token
+                       Crypto.Paseto.Token.Build
+                       Crypto.Paseto.Token.Claim
+                       Crypto.Paseto.Token.Claims
+                       Crypto.Paseto.Token.Encoding
+                       Crypto.Paseto.Token.Parser
+                       Crypto.Paseto.Token.Validation
+
+  other-modules:       Crypto.Paseto.Keys.V3.Internal
+                       Data.Binary.Put.Integer
+
+  build-depends:       base >= 4.14 && < 5
+                     , aeson
+                     , base64-bytestring
+                     , basement
+                     , binary
+                     , bytestring
+                     , containers
+                     , crypton
+                     , deepseq
+                     , memory
+                     , mtl
+                     , parsec
+                     , text
+                     , time
+                     , transformers-except
+
+test-suite paseto-test
+  default-language:    Haskell2010
+  type:                exitcode-stdio-1.0
+  main-is:             Main.hs
+  hs-source-dirs:      test
+  default-extensions:  DerivingStrategies
+                       GeneralizedNewtypeDeriving
+                       NamedFieldPuns
+                       NoImplicitPrelude
+                       OverloadedStrings
+
+  ghc-options:         -Wall
+                       -Werror
+                       -Wcompat
+                       -Wredundant-constraints
+                       -Wincomplete-patterns
+                       -Wincomplete-record-updates
+                       -Wincomplete-uni-patterns
+                       -Wunused-imports
+                       -Wunused-packages
+
+  other-modules:       Test.Crypto.Paseto.Keys.Gen
+                       Test.Crypto.Paseto.Keys.V3.Gen
+                       Test.Crypto.Paseto.Keys.V3
+                       Test.Crypto.Paseto.PreAuthenticationEncoding
+                       Test.Crypto.Paseto.Protocol.V3
+                       Test.Crypto.Paseto.Protocol.V4
+                       Test.Crypto.Paseto.ScrubbedBytes.Gen
+                       Test.Crypto.Paseto.TestVectors
+                       Test.Crypto.Paseto.TestVectorTest
+                       Test.Crypto.Paseto.Token.Encoding
+                       Test.Crypto.Paseto.Token.Gen
+                       Test.Golden
+
+  build-depends:        base >= 4.14 && < 5
+                      , aeson
+                      , base16-bytestring
+                      , bytestring
+                      , crypton
+                      , hedgehog
+                      , memory
+                      , mtl
+                      , paseto
+                      , text
+                      , time
+                      , transformers-except
