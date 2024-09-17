@@ -8,6 +8,8 @@ maintainer:          Luke Nadur
 license:             MIT
 license-file:        LICENSE
 category:            Cryptography
+homepage:            https://github.com/intricate/paseto-haskell
+bug-reports:         https://github.com/intricate/paseto-haskell/issues
 build-type:          Simple
 extra-source-files:  README.md
 
@@ -109,3 +111,7 @@ test-suite paseto-test
                       , text
                       , time
                       , transformers-except
+
+source-repository head
+  type:     git
+  location: git://github.com/intricate/paseto-haskell.git
