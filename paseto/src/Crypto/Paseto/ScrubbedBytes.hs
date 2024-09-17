@@ -9,10 +9,12 @@ module Crypto.Paseto.ScrubbedBytes
   , fromSizedBytes
   , toBytes
   , toSizedBytes
+  , generateScrubbedBytes32
   ) where
 
 import Basement.NormalForm ( NormalForm )
 import Control.DeepSeq ( NFData (..) )
+import qualified Crypto.Random as Crypto
 import Data.ByteArray ( ByteArrayAccess, ScrubbedBytes )
 import qualified Data.ByteArray as BA
 import Data.ByteArray.Sized
@@ -57,3 +59,11 @@ toBytes (ScrubbedBytes32 bs) = bs
 -- 'ScrubbedBytes'.
 toSizedBytes :: ScrubbedBytes32 -> SizedByteArray 32 ScrubbedBytes
 toSizedBytes (MkScrubbedBytes32 bs) = bs
+
+-- | Randomly generate a 'ScrubbedBytes32' value.
+generateScrubbedBytes32 :: IO ScrubbedBytes32
+generateScrubbedBytes32 = do
+  bs <- Crypto.getRandomBytes 32 :: IO ScrubbedBytes
+  case mkScrubbedBytes32 bs of
+    Just x -> pure x
+    Nothing -> error "generateScrubbedBytes32: impossible: failed to randomly generate 32 bytes"

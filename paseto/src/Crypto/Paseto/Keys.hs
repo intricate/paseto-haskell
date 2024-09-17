@@ -9,6 +9,8 @@ module Crypto.Paseto.Keys
   , symmetricKeyToBytes
   , bytesToSymmetricKeyV3
   , bytesToSymmetricKeyV4
+  , generateSymmetricKeyV3
+  , generateSymmetricKeyV4
 
     -- * Asymmetric keys
     -- ** Signing keys
@@ -16,6 +18,8 @@ module Crypto.Paseto.Keys
   , signingKeyToBytes
   , bytesToSigningKeyV3
   , bytesToSigningKeyV4
+  , generateSigningKeyV3
+  , generateSigningKeyV4
     -- ** Verification keys
   , VerificationKey (..)
   , verificationKeyToBytes
@@ -27,7 +31,8 @@ module Crypto.Paseto.Keys
 import qualified Crypto.Error as Crypto
 import qualified Crypto.Paseto.Keys.V3 as V3
 import Crypto.Paseto.Mode ( Version (..) )
-import Crypto.Paseto.ScrubbedBytes ( ScrubbedBytes32 (..), mkScrubbedBytes32 )
+import Crypto.Paseto.ScrubbedBytes
+  ( ScrubbedBytes32 (..), generateScrubbedBytes32, mkScrubbedBytes32 )
 import qualified Crypto.PubKey.Ed25519 as Crypto.Ed25519
 import Data.ByteArray ( ScrubbedBytes, constEq )
 import qualified Data.ByteArray as BA
@@ -74,6 +79,14 @@ bytesToSymmetricKeyV3 = (SymmetricKeyV3 <$>) . mkScrubbedBytes32
 bytesToSymmetricKeyV4 :: ScrubbedBytes -> Maybe (SymmetricKey V4)
 bytesToSymmetricKeyV4 = (SymmetricKeyV4 <$>) . mkScrubbedBytes32
 
+-- | Randomly generate a version 3 symmetric key.
+generateSymmetricKeyV3 :: IO (SymmetricKey V3)
+generateSymmetricKeyV3 = SymmetricKeyV3 <$> generateScrubbedBytes32
+
+-- | Randomly generate a version 4 symmetric key.
+generateSymmetricKeyV4 :: IO (SymmetricKey V4)
+generateSymmetricKeyV4 = SymmetricKeyV4 <$> generateScrubbedBytes32
+
 ------------------------------------------------------------------------------
 -- Asymmetric keys
 ------------------------------------------------------------------------------
@@ -108,6 +121,14 @@ bytesToSigningKeyV4 :: ScrubbedBytes -> Maybe (SigningKey V4)
 bytesToSigningKeyV4 bs =
   SigningKeyV4
     <$> Crypto.maybeCryptoError (Crypto.Ed25519.secretKey bs)
+
+-- | Randomly generate a version 3 signing key.
+generateSigningKeyV3 :: IO (SigningKey V3)
+generateSigningKeyV3 = SigningKeyV3 <$> V3.generatePrivateKeyP384
+
+-- | Randomly generate a version 4 signing key.
+generateSigningKeyV4 :: IO (SigningKey V4)
+generateSigningKeyV4 = SigningKeyV4 <$> Crypto.Ed25519.generateSecretKey
 
 -- | Verification key (also known as a public key).
 data VerificationKey v where

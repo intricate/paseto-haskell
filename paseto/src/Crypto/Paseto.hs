@@ -10,12 +10,16 @@ module Crypto.Paseto
   , symmetricKeyToBytes
   , bytesToSymmetricKeyV3
   , bytesToSymmetricKeyV4
+  , generateSymmetricKeyV3
+  , generateSymmetricKeyV4
     -- ** Asymmetric keys
     -- *** Signing keys
   , SigningKey (..)
   , signingKeyToBytes
   , bytesToSigningKeyV3
   , bytesToSigningKeyV4
+  , generateSigningKeyV3
+  , generateSigningKeyV4
     -- *** Verification keys
   , VerificationKey (..)
   , verificationKeyToBytes
@@ -57,6 +61,10 @@ import Crypto.Paseto.Keys
   , bytesToVerificationKeyV3
   , bytesToVerificationKeyV4
   , fromSigningKey
+  , generateSigningKeyV3
+  , generateSigningKeyV4
+  , generateSymmetricKeyV3
+  , generateSymmetricKeyV4
   , signingKeyToBytes
   , symmetricKeyToBytes
   , verificationKeyToBytes
