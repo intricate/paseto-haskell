@@ -1,4 +1,15 @@
 -- | Collection of PASETO token claims.
+--
+-- It is recommended to import this module qualified since it contains
+-- functions which may conflict with those in "Prelude" and other container
+-- implementations such as "Data.Map".
+--
+-- For example:
+--
+-- @
+-- import Crypto.Paseto.Token.Claims (Claims)
+-- import qualified Crypto.Paseto.Token.Claims as Claims
+-- @
 module Crypto.Paseto.Token.Claims
   ( -- * Claims type
     Claims
