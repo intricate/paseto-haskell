@@ -127,12 +127,18 @@ data V3LocalDecodingError
     V3LocalDecodingDecryptionError !V3.DecryptionError
   deriving stock (Show, Eq)
 
+-- | Parse, 'V3.decrypt', and 'validate' a version 3 local PASETO token.
 decodeAndValidateTokenV3Local
   :: SymmetricKey V3
+  -- ^ Symmetric key.
   -> [ValidationRule]
+  -- ^ Validation rules.
   -> Maybe Footer
+  -- ^ Optional footer to authenticate.
   -> Maybe ImplicitAssertion
+  -- ^ Optional implicit assertion to authenticate.
   -> Text
+  -- ^ Encoded PASETO token.
   -> Either V3LocalDecodingError (ValidatedToken V3 Local)
 decodeAndValidateTokenV3Local k rs f i t = do
   parsed <-
@@ -162,12 +168,18 @@ data V3PublicDecodingError
     V3PublicDecodingVerificationError !V3.VerificationError
   deriving stock (Show, Eq)
 
+-- | Parse, 'V3.verify', and 'validate' a version 3 public PASETO token.
 decodeAndValidateTokenV3Public
   :: VerificationKey V3
+  -- ^ Verification key.
   -> [ValidationRule]
+  -- ^ Validation rules.
   -> Maybe Footer
+  -- ^ Optional footer to authenticate.
   -> Maybe ImplicitAssertion
+  -- ^ Optional implicit assertion to authenticate.
   -> Text
+  -- ^ Encoded PASETO token.
   -> Either V3PublicDecodingError (ValidatedToken V3 Public)
 decodeAndValidateTokenV3Public vk rs f i t = do
   parsed <-
@@ -197,12 +209,18 @@ data V4LocalDecodingError
     V4LocalDecodingDecryptionError !V4.DecryptionError
   deriving stock (Show, Eq)
 
+-- | Parse, 'V4.decrypt', and 'validate' a version 4 local PASETO token.
 decodeAndValidateTokenV4Local
   :: SymmetricKey V4
+  -- ^ Symmetric key.
   -> [ValidationRule]
+  -- ^ Validation rules.
   -> Maybe Footer
+  -- ^ Optional footer to authenticate.
   -> Maybe ImplicitAssertion
+  -- ^ Optional implicit assertion to authenticate.
   -> Text
+  -- ^ Encoded PASETO token.
   -> Either V4LocalDecodingError (ValidatedToken V4 Local)
 decodeAndValidateTokenV4Local k rs f i t = do
   parsed <-
@@ -232,12 +250,18 @@ data V4PublicDecodingError
     V4PublicDecodingVerificationError !V4.VerificationError
   deriving stock (Show, Eq)
 
+-- | Parse, 'V4.verify', and 'validate' a version 4 public PASETO token.
 decodeAndValidateTokenV4Public
   :: VerificationKey V4
+  -- ^ Verification key.
   -> [ValidationRule]
+  -- ^ Validation rules.
   -> Maybe Footer
+  -- ^ Optional footer to authenticate.
   -> Maybe ImplicitAssertion
+  -- ^ Optional implicit assertion to authenticate.
   -> Text
+  -- ^ Encoded PASETO token.
   -> Either V4PublicDecodingError (ValidatedToken V4 Public)
 decodeAndValidateTokenV4Public vk rs f i t = do
   parsed <-
