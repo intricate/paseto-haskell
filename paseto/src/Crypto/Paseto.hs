@@ -46,6 +46,24 @@ module Crypto.Paseto
   , decodeAndValidateTokenV3Public
   , decodeAndValidateTokenV4Local
   , decodeAndValidateTokenV4Public
+    -- ** Claims
+    -- *** Container type
+    -- $claimsContainer
+  , Claims
+    -- *** Claim types
+  , Claim (..)
+  , Issuer (..)
+  , Subject (..)
+  , Audience (..)
+  , Expiration (..)
+  , NotBefore (..)
+  , IssuedAt (..)
+  , TokenIdentifier (..)
+    -- *** Custom/unregistered claim keys
+  , UnregisteredClaimKey
+  , mkUnregisteredClaimKey
+  , renderUnregisteredClaimKey
+
     -- ** Validation
   , module Validation
   ) where
@@ -80,6 +98,20 @@ import Crypto.Paseto.Token.Build
   , buildTokenV4Public
   , getDefaultBuildTokenParams
   )
+import Crypto.Paseto.Token.Claim
+  ( Audience (..)
+  , Claim (..)
+  , Expiration (..)
+  , IssuedAt (..)
+  , Issuer (..)
+  , NotBefore (..)
+  , Subject (..)
+  , TokenIdentifier (..)
+  , UnregisteredClaimKey
+  , mkUnregisteredClaimKey
+  , renderUnregisteredClaimKey
+  )
+import Crypto.Paseto.Token.Claims ( Claims )
 import Crypto.Paseto.Token.Encoding
   ( ValidatedToken (..)
   , decodeAndValidateTokenV3Local
@@ -89,3 +121,18 @@ import Crypto.Paseto.Token.Encoding
   , encode
   )
 import Crypto.Paseto.Token.Validation as Validation
+
+-- $claimsContainer
+--
+-- Collection of PASETO token claims.
+--
+-- Note that we only re-export the 'Claims' type from this module as the rest
+-- of the API contains functions which may conflict with those in "Prelude"
+-- and other container implementations such as "Data.Map".
+--
+-- If you need access to those other functions, it's recommended to import
+-- "Crypto.Paseto.Token.Claims" qualified. For example:
+--
+-- @
+-- import qualified Crypto.Paseto.Token.Claims as Claims
+-- @
