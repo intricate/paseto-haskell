@@ -71,7 +71,7 @@ import Prelude hiding ( lookup, null )
 -- | Collection of 'Claim's.
 newtype Claims = Claims
   { unClaims :: Map ClaimKey Claim }
-  deriving newtype (Show, Eq)
+  deriving newtype (Show, Eq, Semigroup, Monoid)
 
 instance ToJSON Claims where
   toJSON = Aeson.object . map (claimToPair . snd) . Map.toList . unClaims
