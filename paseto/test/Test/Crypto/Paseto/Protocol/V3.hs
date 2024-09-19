@@ -20,8 +20,8 @@ import qualified Hedgehog.Range as Range
 import Prelude
 import Test.Crypto.Paseto.Keys.Gen ( genSigningKeyV3, genSymmetricKeyV3 )
 import Test.Crypto.Paseto.Keys.V3.Gen ( genScalarP384 )
-import Test.Crypto.Paseto.Token.Gen
-  ( genClaims, genFooter, genImplicitAssertion )
+import Test.Crypto.Paseto.Token.Claims.Gen ( genClaims )
+import Test.Crypto.Paseto.Token.Gen ( genFooter, genImplicitAssertion )
 import Test.Golden ( goldenTestPaseto )
 
 tests :: IO Bool

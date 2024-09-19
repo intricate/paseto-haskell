@@ -97,12 +97,17 @@ test-suite paseto-test
                        Test.Crypto.Paseto.TestVectorTest
                        Test.Crypto.Paseto.Token.Encoding
                        Test.Crypto.Paseto.Token.Gen
+                       Test.Crypto.Paseto.Token.Claim
+                       Test.Crypto.Paseto.Token.Claim.Gen
+                       Test.Crypto.Paseto.Token.Claims
+                       Test.Crypto.Paseto.Token.Claims.Gen
                        Test.Golden
 
   build-depends:        base >= 4.14 && < 5
                       , aeson
                       , base16-bytestring
                       , bytestring
+                      , containers
                       , crypton
                       , hedgehog
                       , memory
