@@ -42,10 +42,10 @@ module Crypto.Paseto
     -- ** Encoding and decoding
   , encode
   , ValidatedToken (..)
-  , decodeAndValidateTokenV3Local
-  , decodeAndValidateTokenV3Public
-  , decodeAndValidateTokenV4Local
-  , decodeAndValidateTokenV4Public
+  , decodeTokenV3Local
+  , decodeTokenV3Public
+  , decodeTokenV4Local
+  , decodeTokenV4Public
     -- ** Claims
     -- *** Container type
     -- $claimsContainer
@@ -63,7 +63,6 @@ module Crypto.Paseto
   , UnregisteredClaimKey
   , mkUnregisteredClaimKey
   , renderUnregisteredClaimKey
-
     -- ** Validation
   , module Validation
   ) where
@@ -114,10 +113,10 @@ import Crypto.Paseto.Token.Claim
 import Crypto.Paseto.Token.Claims ( Claims )
 import Crypto.Paseto.Token.Encoding
   ( ValidatedToken (..)
-  , decodeAndValidateTokenV3Local
-  , decodeAndValidateTokenV3Public
-  , decodeAndValidateTokenV4Local
-  , decodeAndValidateTokenV4Public
+  , decodeTokenV3Local
+  , decodeTokenV3Public
+  , decodeTokenV4Local
+  , decodeTokenV4Public
   , encode
   )
 import Crypto.Paseto.Token.Validation as Validation

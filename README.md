@@ -104,7 +104,7 @@ let rules :: [ValidationRules]
 
 -- Decode, cryptographically verify, and validate the token
 let decodeResult =
-      decodeAndValidateTokenV4Local
+      decodeTokenV4Local
         symmetricKey
         rules
         (Just $ Footer "footer")

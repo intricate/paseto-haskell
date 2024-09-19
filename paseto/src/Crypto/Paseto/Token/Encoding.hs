@@ -12,13 +12,13 @@ module Crypto.Paseto.Token.Encoding
     -- * Decoding
   , CommonDecodingError (..)
   , V3LocalDecodingError (..)
-  , decodeAndValidateTokenV3Local
+  , decodeTokenV3Local
   , V3PublicDecodingError (..)
-  , decodeAndValidateTokenV3Public
+  , decodeTokenV3Public
   , V4LocalDecodingError (..)
-  , decodeAndValidateTokenV4Local
+  , decodeTokenV4Local
   , V4PublicDecodingError (..)
-  , decodeAndValidateTokenV4Public
+  , decodeTokenV4Public
 
     -- * Validated token
   , ValidatedToken (..)
@@ -128,7 +128,7 @@ data V3LocalDecodingError
   deriving stock (Show, Eq)
 
 -- | Parse, 'V3.decrypt', and 'validate' a version 3 local PASETO token.
-decodeAndValidateTokenV3Local
+decodeTokenV3Local
   :: SymmetricKey V3
   -- ^ Symmetric key.
   -> [ValidationRule]
@@ -140,7 +140,7 @@ decodeAndValidateTokenV3Local
   -> Text
   -- ^ Encoded PASETO token.
   -> Either V3LocalDecodingError (ValidatedToken V3 Local)
-decodeAndValidateTokenV3Local k rs f i t = do
+decodeTokenV3Local k rs f i t = do
   parsed <-
     case parseSomeToken t of
       Right (SomeTokenV3Local x) -> Right x
@@ -169,7 +169,7 @@ data V3PublicDecodingError
   deriving stock (Show, Eq)
 
 -- | Parse, 'V3.verify', and 'validate' a version 3 public PASETO token.
-decodeAndValidateTokenV3Public
+decodeTokenV3Public
   :: VerificationKey V3
   -- ^ Verification key.
   -> [ValidationRule]
@@ -181,7 +181,7 @@ decodeAndValidateTokenV3Public
   -> Text
   -- ^ Encoded PASETO token.
   -> Either V3PublicDecodingError (ValidatedToken V3 Public)
-decodeAndValidateTokenV3Public vk rs f i t = do
+decodeTokenV3Public vk rs f i t = do
   parsed <-
     case parseSomeToken t of
       Right (SomeTokenV3Public x) -> Right x
@@ -210,7 +210,7 @@ data V4LocalDecodingError
   deriving stock (Show, Eq)
 
 -- | Parse, 'V4.decrypt', and 'validate' a version 4 local PASETO token.
-decodeAndValidateTokenV4Local
+decodeTokenV4Local
   :: SymmetricKey V4
   -- ^ Symmetric key.
   -> [ValidationRule]
@@ -222,7 +222,7 @@ decodeAndValidateTokenV4Local
   -> Text
   -- ^ Encoded PASETO token.
   -> Either V4LocalDecodingError (ValidatedToken V4 Local)
-decodeAndValidateTokenV4Local k rs f i t = do
+decodeTokenV4Local k rs f i t = do
   parsed <-
     case parseSomeToken t of
       Right (SomeTokenV4Local x) -> Right x
@@ -251,7 +251,7 @@ data V4PublicDecodingError
   deriving stock (Show, Eq)
 
 -- | Parse, 'V4.verify', and 'validate' a version 4 public PASETO token.
-decodeAndValidateTokenV4Public
+decodeTokenV4Public
   :: VerificationKey V4
   -- ^ Verification key.
   -> [ValidationRule]
@@ -263,7 +263,7 @@ decodeAndValidateTokenV4Public
   -> Text
   -- ^ Encoded PASETO token.
   -> Either V4PublicDecodingError (ValidatedToken V4 Public)
-decodeAndValidateTokenV4Public vk rs f i t = do
+decodeTokenV4Public vk rs f i t = do
   parsed <-
     case parseSomeToken t of
       Right (SomeTokenV4Public x) -> Right x

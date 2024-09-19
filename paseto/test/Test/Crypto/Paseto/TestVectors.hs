@@ -19,10 +19,10 @@ import Crypto.Paseto.Keys
 import Crypto.Paseto.Token ( Footer (..), ImplicitAssertion (..) )
 import Crypto.Paseto.Token.Encoding
   ( ValidatedToken (..)
-  , decodeAndValidateTokenV3Local
-  , decodeAndValidateTokenV3Public
-  , decodeAndValidateTokenV4Local
-  , decodeAndValidateTokenV4Public
+  , decodeTokenV3Local
+  , decodeTokenV3Public
+  , decodeTokenV4Local
+  , decodeTokenV4Public
   )
 import Data.Aeson ( FromJSON (..), withObject, withText, (.:), (.:?) )
 import qualified Data.Aeson as Aeson
@@ -107,7 +107,7 @@ mkV3LocalTestVectorProperty ltv =
           Nothing -> fail "invalid version 3 symmetric key"
           Just k -> pure k
 
-      case decodeAndValidateTokenV3Local key [] ltvFooter ltvImplicitAssertion ltvToken of
+      case decodeTokenV3Local key [] ltvFooter ltvImplicitAssertion ltvToken of
         Left err ->
           case ltvPayload of
             Nothing -> left ExpectedFailure
@@ -142,7 +142,7 @@ mkV4LocalTestVectorProperty ltv =
           Nothing -> fail "invalid version 4 symmetric key"
           Just k -> pure k
 
-      case decodeAndValidateTokenV4Local key [] ltvFooter ltvImplicitAssertion ltvToken of
+      case decodeTokenV4Local key [] ltvFooter ltvImplicitAssertion ltvToken of
         Left err ->
           case ltvPayload of
             Nothing -> left ExpectedFailure
@@ -205,7 +205,7 @@ mkV3PublicTestVectorProperty ptv =
           Left err -> fail $ "invalid version 3 verification key: " <> show err
           Right k -> pure k
 
-      case decodeAndValidateTokenV3Public vk [] ptvFooter ptvImplicitAssertion ptvToken of
+      case decodeTokenV3Public vk [] ptvFooter ptvImplicitAssertion ptvToken of
         Left err ->
           case ptvPayload of
             Nothing -> left ExpectedFailure
@@ -240,7 +240,7 @@ mkV4PublicTestVectorProperty ptv =
           Nothing -> fail "invalid version 4 verification key"
           Just k -> pure k
 
-      case decodeAndValidateTokenV4Public vk [] ptvFooter ptvImplicitAssertion ptvToken of
+      case decodeTokenV4Public vk [] ptvFooter ptvImplicitAssertion ptvToken of
         Left err ->
           case ptvPayload of
             Nothing -> left ExpectedFailure
