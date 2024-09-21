@@ -12,6 +12,7 @@ homepage:            https://github.com/intricate/paseto-haskell
 bug-reports:         https://github.com/intricate/paseto-haskell/issues
 build-type:          Simple
 extra-source-files:  README.md
+extra-doc-files:     CHANGELOG.md
 
 library
   default-language:    Haskell2010
