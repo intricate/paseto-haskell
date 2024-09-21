@@ -122,6 +122,9 @@ issuedBy :: Issuer -> ValidationRule
 issuedBy = mkEqValidationRule lookupIssuer IssuerClaimKey unIssuer
 
 -- | Validate that a token is not expired at the given time.
+--
+-- That is, if the 'Crypto.Paseto.Token.Claim.ExpirationClaim' is present,
+-- check that it isn't in the past (relative to the given time).
 notExpired :: UTCTime -> ValidationRule
 notExpired x = ValidationRule $ \cs ->
   case lookupExpiration cs of
@@ -135,6 +138,17 @@ subject :: Subject -> ValidationRule
 subject = mkEqValidationRule lookupSubject SubjectClaimKey unSubject
 
 -- | Validate that a token is valid at the given time.
+--
+-- This involves the following checks (relative to the given time):
+--
+-- * If the 'Crypto.Paseto.Token.Claim.ExpirationClaim' is present, check that
+-- it isn't in the past.
+--
+-- * If the 'Crypto.Paseto.Token.Claim.IssuedAtClaim' is present, check that it
+-- isn't in the future.
+--
+-- * If the 'Crypto.Paseto.Token.Claim.NotBeforeClaim' is present, check that
+-- it isn't in the future.
 validAt :: UTCTime -> ValidationRule
 validAt x = ValidationRule $ \cs -> do
   unValidationRule (notExpired x) cs
