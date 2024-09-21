@@ -14,6 +14,7 @@ module Test.Crypto.Paseto.Token.Claim.Gen
   , genTokenIdentifier
   , genClaim
   , genAesonString
+  , genUTCTime
   ) where
 
 import Crypto.Paseto.Token.Claim
@@ -31,15 +32,13 @@ import Crypto.Paseto.Token.Claim
   , parseClaimKey
   , registeredClaimKeys
   )
-import qualified Data.Aeson as Aeson
 import qualified Data.Set as Set
 import Data.Text ( Text )
-import Data.Time.Calendar.OrdinalDate ( Day, fromOrdinalDate )
-import Data.Time.Clock ( DiffTime, UTCTime (..), secondsToDiffTime )
 import Hedgehog ( Gen )
 import qualified Hedgehog.Gen as Gen
 import qualified Hedgehog.Range as Range
 import Prelude
+import Test.Gen ( genAesonString, genUTCTime )
 
 genUnregisteredClaimKey :: Gen UnregisteredClaimKey
 genUnregisteredClaimKey =
@@ -93,22 +92,3 @@ genClaim =
     , TokenIdentifierClaim <$> genTokenIdentifier
     , CustomClaim <$> genUnregisteredClaimKey <*> genAesonString
     ]
-
-------------------------------------------------------------------------------
--- Helpers
-------------------------------------------------------------------------------
-
-genAesonString :: Gen Aeson.Value
-genAesonString = Aeson.String <$> Gen.text (Range.constant 0 1024) Gen.unicodeAll
-
-genUTCTime :: Gen UTCTime
-genUTCTime = UTCTime <$> genDay <*> genDiffTime
-  where
-    genDay :: Gen Day
-    genDay =
-      fromOrdinalDate
-        <$> Gen.integral (Range.constant 0 3000)
-        <*> Gen.int (Range.constant 1 365)
-
-    genDiffTime :: Gen DiffTime
-    genDiffTime = secondsToDiffTime <$> Gen.integral (Range.constant 0 86401)

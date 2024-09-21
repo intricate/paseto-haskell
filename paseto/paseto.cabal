@@ -95,12 +95,15 @@ test-suite paseto-test
                        Test.Crypto.Paseto.ScrubbedBytes.Gen
                        Test.Crypto.Paseto.TestVectors
                        Test.Crypto.Paseto.TestVectorTest
-                       Test.Crypto.Paseto.Token.Encoding
-                       Test.Crypto.Paseto.Token.Gen
                        Test.Crypto.Paseto.Token.Claim
                        Test.Crypto.Paseto.Token.Claim.Gen
                        Test.Crypto.Paseto.Token.Claims
                        Test.Crypto.Paseto.Token.Claims.Gen
+                       Test.Crypto.Paseto.Token.Encoding
+                       Test.Crypto.Paseto.Token.Gen
+                       Test.Crypto.Paseto.Token.Validation
+                       Test.Crypto.Paseto.Token.Validation.Gen
+                       Test.Gen
                        Test.Golden
 
   build-depends:        base >= 4.14 && < 5
