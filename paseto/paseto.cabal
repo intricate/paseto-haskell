@@ -78,7 +78,6 @@ test-suite paseto-test
                        OverloadedStrings
 
   ghc-options:         -Wall
-                       -Werror
                        -Wcompat
                        -Wredundant-constraints
                        -Wincomplete-patterns
