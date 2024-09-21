@@ -7,7 +7,6 @@ module Crypto.Paseto.Token.Validation
   , ValidationRule (..)
   , ClaimMustExist (..)
     -- ** Simple rules
-  , mkEqValidationRule
   , forAudience
   , identifiedBy
   , issuedBy
