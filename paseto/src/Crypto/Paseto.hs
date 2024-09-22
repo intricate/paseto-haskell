@@ -20,7 +20,7 @@ module Crypto.Paseto
   , bytesToSigningKeyV4
   , generateSigningKeyV3
   , generateSigningKeyV4
-    -- **** Errors
+    -- | ==== Errors
   , ScalarDecodingError (..)
   , renderScalarDecodingError
     -- *** Verification keys
@@ -29,7 +29,7 @@ module Crypto.Paseto
   , bytesToVerificationKeyV3
   , bytesToVerificationKeyV4
   , fromSigningKey
-    -- **** Errors
+    -- | ==== Errors
   , PublicKeyP384DecodingError (..)
   , renderPublicKeyP384DecodingError
 
@@ -45,19 +45,19 @@ module Crypto.Paseto
   , buildTokenV3Public
   , buildTokenV4Local
   , buildTokenV4Public
-    -- *** Errors
+    -- | === Errors
   , V3LocalBuildError (..)
   , renderV3LocalBuildError
   , V3PublicBuildError (..)
   , renderV3PublicBuildError
-    -- ** Encoding and decoding
+    -- ** Encoding and decoding #encodingDecoding#
   , encode
   , ValidatedToken (..)
   , decodeTokenV3Local
   , decodeTokenV3Public
   , decodeTokenV4Local
   , decodeTokenV4Public
-    -- *** Errors
+    -- | === Errors
   , CommonDecodingError (..)
   , renderCommonDecodingError
   , V3LocalDecodingError (..)
@@ -84,7 +84,7 @@ module Crypto.Paseto
   , IssuedAt (..)
   , renderIssuedAt
   , TokenIdentifier (..)
-    -- *** Custom/unregistered claim keys
+    -- *** Custom claim keys
   , UnregisteredClaimKey
   , mkUnregisteredClaimKey
   , renderUnregisteredClaimKey
@@ -92,7 +92,7 @@ module Crypto.Paseto
     -- *** Rules
   , ValidationRule (..)
   , ClaimMustExist (..)
-    -- **** Recommended default rules
+    -- **** Default rules
   , getDefaultValidationRules
     -- **** Simple rules
   , forAudience
@@ -102,10 +102,16 @@ module Crypto.Paseto
   , subject
   , validAt
   , customClaimEq
-    -- *** Errors
+    -- | === Errors
   , ValidationError (..)
   , renderValidationError
   , renderValidationErrors
+    -- ** Unsafe parsers
+    -- $parsers
+  , parseTokenV3Local
+  , parseTokenV3Public
+  , parseTokenV4Local
+  , parseTokenV4Public
   ) where
 
 import Crypto.Paseto.Keys
@@ -183,6 +189,12 @@ import Crypto.Paseto.Token.Encoding
   , renderV4LocalDecodingError
   , renderV4PublicDecodingError
   )
+import Crypto.Paseto.Token.Parser
+  ( parseTokenV3Local
+  , parseTokenV3Public
+  , parseTokenV4Local
+  , parseTokenV4Public
+  )
 import Crypto.Paseto.Token.Validation
   ( ClaimMustExist (..)
   , ValidationError (..)
@@ -213,3 +225,21 @@ import Crypto.Paseto.Token.Validation
 -- @
 -- import qualified Crypto.Paseto.Token.Claims as Claims
 -- @
+
+-- $parsers
+--
+-- Note that these parsers are considered __unsafe__ as they /do not/ perform
+-- any kind of token validation, cryptographic or otherwise. They simply
+-- ensure that the input /looks like/ a well-formed token.
+--
+-- For typical usage, one should use the decoding functions that perform
+-- parsing, cryptographic verification, and validation from the
+-- [encoding and decoding](#g:encodingDecoding) section.
+--
+-- As a result, you should only use these unsafe parsers in specific
+-- situations where you really know what you're doing. For example, they can
+-- be useful in situations where one wants to parse some information out of a
+-- token's footer without first needing to decrypt or verify the token. For
+-- more information on this particular scenario, see
+-- [Key-ID Support](https://github.com/paseto-standard/paseto-spec/blob/af79f25908227555404e7462ccdd8ce106049469/docs/02-Implementation-Guide/01-Payload-Processing.md#key-id-support)
+-- in the PASETO specification.
