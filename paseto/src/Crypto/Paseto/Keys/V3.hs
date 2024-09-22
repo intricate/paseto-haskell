@@ -12,6 +12,7 @@ module Crypto.Paseto.Keys.V3
   , generatePrivateKeyP384
   , encodePrivateKeyP384
   , Internal.ScalarDecodingError (..)
+  , Internal.renderScalarDecodingError
   , decodePrivateKeyP384
   -- ** Helpers
   , generateScalarP384

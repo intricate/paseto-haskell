@@ -22,6 +22,7 @@ module Crypto.Paseto
   , generateSigningKeyV4
     -- **** Errors
   , ScalarDecodingError (..)
+  , renderScalarDecodingError
     -- *** Verification keys
   , VerificationKey (..)
   , verificationKeyToBytes
@@ -100,7 +101,10 @@ import Crypto.Paseto.Keys
   , verificationKeyToBytes
   )
 import Crypto.Paseto.Keys.V3
-  ( PublicKeyP384DecodingError (..), ScalarDecodingError (..) )
+  ( PublicKeyP384DecodingError (..)
+  , ScalarDecodingError (..)
+  , renderScalarDecodingError
+  )
 import Crypto.Paseto.Mode ( Purpose (..), Version (..) )
 import Crypto.Paseto.Token
   ( Footer (..), ImplicitAssertion (..), Payload (..), Token (..) )

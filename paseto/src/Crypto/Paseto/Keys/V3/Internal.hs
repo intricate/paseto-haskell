@@ -2,6 +2,7 @@ module Crypto.Paseto.Keys.V3.Internal
   ( isScalarValid
   , encodeScalar
   , ScalarDecodingError (..)
+  , renderScalarDecodingError
   , decodeScalar
 
   , encodePointUncompressed
@@ -24,6 +25,8 @@ import Data.ByteArray ( ScrubbedBytes )
 import qualified Data.ByteArray as BA
 import Data.ByteString ( ByteString )
 import qualified Data.ByteString as BS
+import Data.Text ( Text )
+import qualified Data.Text as T
 import Data.Word ( Word8 )
 import Prelude
 
@@ -53,6 +56,18 @@ data ScalarDecodingError
   | -- | Decoded scalar is invalid for the curve.
     ScalarDecodingInvalidError
   deriving stock (Show, Eq)
+
+-- | Render a 'ScalarDecodingError' as 'Text'.
+renderScalarDecodingError :: ScalarDecodingError -> Text
+renderScalarDecodingError err =
+  case err of
+    ScalarDecodingInvalidLengthError expected actual ->
+      "Decoded scalar value is of length "
+        <> T.pack (show actual)
+        <> ", but was expected to be "
+        <> T.pack (show expected)
+        <> "."
+    ScalarDecodingInvalidError -> "Decoded scalar value is invalid for the curve."
 
 -- | Decode an elliptic curve scalar value.
 decodeScalar :: ECC.Curve -> ScrubbedBytes -> Either ScalarDecodingError Integer
