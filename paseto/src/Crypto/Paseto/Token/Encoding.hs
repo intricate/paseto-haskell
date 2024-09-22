@@ -19,6 +19,7 @@ module Crypto.Paseto.Token.Encoding
   , renderV3PublicDecodingError
   , decodeTokenV3Public
   , V4LocalDecodingError (..)
+  , renderV4LocalDecodingError
   , decodeTokenV4Local
   , V4PublicDecodingError (..)
   , decodeTokenV4Public
@@ -215,6 +216,13 @@ data V4LocalDecodingError
   | -- | Decryption error.
     V4LocalDecodingDecryptionError !V4.DecryptionError
   deriving stock (Show, Eq)
+
+-- | Render a 'V4LocalDecodingError' as 'Text'.
+renderV4LocalDecodingError :: V4LocalDecodingError -> Text
+renderV4LocalDecodingError err =
+  case err of
+    V4LocalDecodingCommonError e -> renderCommonDecodingError e
+    V4LocalDecodingDecryptionError e -> V4.renderDecryptionError e
 
 -- | Parse, 'V4.decrypt', and 'validate' a version 4 local PASETO token.
 decodeTokenV4Local
