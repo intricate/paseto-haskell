@@ -29,16 +29,14 @@ import Crypto.Paseto.Mode ( Purpose (..), Version (..) )
 import qualified Crypto.Paseto.Protocol.V3 as V3
 import qualified Crypto.Paseto.Protocol.V4 as V4
 import Crypto.Paseto.Token
-  ( Footer (..)
-  , ImplicitAssertion
-  , Payload (..)
-  , SomeToken (..)
-  , Token (..)
-  , tokenPurpose
-  , tokenVersion
-  )
+  ( Footer (..), ImplicitAssertion, Payload (..), SomeToken (..), Token (..) )
 import Crypto.Paseto.Token.Claims ( Claims )
-import Crypto.Paseto.Token.Parser ( parseSomeToken )
+import Crypto.Paseto.Token.Parser
+  ( parseTokenV3Local
+  , parseTokenV3Public
+  , parseTokenV4Local
+  , parseTokenV4Public
+  )
 import Crypto.Paseto.Token.Validation
   ( ValidationError, ValidationRule, validate )
 import Data.Bifunctor ( first )
@@ -103,12 +101,6 @@ data ValidatedToken v p = ValidatedToken
 data CommonDecodingError
   = -- | Error parsing the token.
     CommonDecodingParseError !ParseError
-  | -- | Token version and purpose is invalid.
-    CommonDecodingInvalidVersionAndPurposeError
-      -- | Expected token version and purpose.
-      !(Version, Purpose)
-      -- | Actual token version and purpose.
-      !(Version, Purpose)
   | -- | Token claims validation error.
     CommonDecodingClaimsValidationError !(NonEmpty ValidationError)
   deriving stock (Show, Eq)
@@ -142,14 +134,9 @@ decodeTokenV3Local
   -> Either V3LocalDecodingError (ValidatedToken V3 Local)
 decodeTokenV3Local k rs f i t = do
   parsed <-
-    case parseSomeToken t of
-      Right (SomeTokenV3Local x) -> Right x
-      Right x ->
-        Left . V3LocalDecodingCommonError $
-          CommonDecodingInvalidVersionAndPurposeError
-            (V3, Local)
-            (tokenVersion x, tokenPurpose x)
-      Left err -> Left (V3LocalDecodingCommonError $ CommonDecodingParseError err)
+    first
+      (V3LocalDecodingCommonError . CommonDecodingParseError)
+      (parseTokenV3Local t)
   claims <-
     case V3.decrypt k parsed f i of
       Left err -> Left (V3LocalDecodingDecryptionError err)
@@ -183,14 +170,9 @@ decodeTokenV3Public
   -> Either V3PublicDecodingError (ValidatedToken V3 Public)
 decodeTokenV3Public vk rs f i t = do
   parsed <-
-    case parseSomeToken t of
-      Right (SomeTokenV3Public x) -> Right x
-      Right x ->
-        Left . V3PublicDecodingCommonError $
-          CommonDecodingInvalidVersionAndPurposeError
-            (V3, Public)
-            (tokenVersion x, tokenPurpose x)
-      Left err -> Left (V3PublicDecodingCommonError $ CommonDecodingParseError err)
+    first
+      (V3PublicDecodingCommonError . CommonDecodingParseError)
+      (parseTokenV3Public t)
   claims <-
     case V3.verify vk parsed f i of
       Left err -> Left (V3PublicDecodingVerificationError err)
@@ -224,14 +206,9 @@ decodeTokenV4Local
   -> Either V4LocalDecodingError (ValidatedToken V4 Local)
 decodeTokenV4Local k rs f i t = do
   parsed <-
-    case parseSomeToken t of
-      Right (SomeTokenV4Local x) -> Right x
-      Right x ->
-        Left . V4LocalDecodingCommonError $
-          CommonDecodingInvalidVersionAndPurposeError
-            (V4, Local)
-            (tokenVersion x, tokenPurpose x)
-      Left err -> Left (V4LocalDecodingCommonError $ CommonDecodingParseError err)
+    first
+      (V4LocalDecodingCommonError . CommonDecodingParseError)
+      (parseTokenV4Local t)
   claims <-
     case V4.decrypt k parsed f i of
       Left err -> Left (V4LocalDecodingDecryptionError err)
@@ -265,14 +242,9 @@ decodeTokenV4Public
   -> Either V4PublicDecodingError (ValidatedToken V4 Public)
 decodeTokenV4Public vk rs f i t = do
   parsed <-
-    case parseSomeToken t of
-      Right (SomeTokenV4Public x) -> Right x
-      Right x ->
-        Left . V4PublicDecodingCommonError $
-          CommonDecodingInvalidVersionAndPurposeError
-            (V4, Public)
-            (tokenVersion x, tokenPurpose x)
-      Left err -> Left (V4PublicDecodingCommonError $ CommonDecodingParseError err)
+    first
+      (V4PublicDecodingCommonError . CommonDecodingParseError)
+      (parseTokenV4Public t)
   claims <-
     case V4.verify vk parsed f i of
       Left err -> Left (V4PublicDecodingVerificationError err)

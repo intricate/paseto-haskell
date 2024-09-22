@@ -11,8 +11,6 @@ module Crypto.Paseto.Token
 
   , Token (..)
   , SomeToken (..)
-  , tokenVersion
-  , tokenPurpose
   , toSomeToken
   ) where
 
@@ -115,22 +113,6 @@ data SomeToken
   | SomeTokenV4Local !(Token V4 Local)
   | SomeTokenV4Public !(Token V4 Public)
   deriving stock (Show, Eq)
-
-tokenVersion :: SomeToken -> Version
-tokenVersion t =
-  case t of
-    SomeTokenV3Local _ -> V3
-    SomeTokenV3Public _ -> V3
-    SomeTokenV4Local _ -> V4
-    SomeTokenV4Public _ -> V4
-
-tokenPurpose :: SomeToken -> Purpose
-tokenPurpose t =
-  case t of
-    SomeTokenV3Local _ -> Local
-    SomeTokenV3Public _ -> Public
-    SomeTokenV4Local _ -> Local
-    SomeTokenV4Public _ -> Public
 
 -- | Convert a 'Token' to a 'SomeToken'.
 toSomeToken :: Token v p -> SomeToken
