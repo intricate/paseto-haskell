@@ -3,6 +3,7 @@ module Crypto.Paseto.Token.Validation
   ( -- * Errors
     ValidationError (..)
   , renderValidationError
+  , renderValidationErrors
 
     -- * Rules
   , ValidationRule (..)
@@ -56,6 +57,7 @@ import qualified Data.List as L
 import Data.List.NonEmpty ( NonEmpty )
 import qualified Data.List.NonEmpty as NE
 import Data.Text ( Text )
+import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
 import Data.Time.Clock ( UTCTime, getCurrentTime )
 import Prelude hiding ( exp, lookup )
@@ -105,6 +107,11 @@ renderValidationError err =
     ValidationNotBeforeError nbf ->
       "token is not valid before " <> renderNotBefore nbf
     ValidationCustomError e -> e
+
+-- | Render a non-empty list of 'ValidationError's as 'Text'.
+renderValidationErrors :: NonEmpty ValidationError -> Text
+renderValidationErrors errs =
+  T.intercalate ", " (map renderValidationError (NE.toList errs))
 
 -- | Token claim validation rule.
 newtype ValidationRule = ValidationRule
