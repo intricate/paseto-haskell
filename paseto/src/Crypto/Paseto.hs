@@ -59,6 +59,7 @@ module Crypto.Paseto
   , decodeTokenV4Public
     -- *** Errors
   , CommonDecodingError (..)
+  , renderCommonDecodingError
   , V3LocalDecodingError (..)
   , V3PublicDecodingError (..)
   , V4LocalDecodingError (..)
@@ -156,6 +157,7 @@ import Crypto.Paseto.Token.Encoding
   , decodeTokenV4Local
   , decodeTokenV4Public
   , encode
+  , renderCommonDecodingError
   )
 import Crypto.Paseto.Token.Validation as Validation
 

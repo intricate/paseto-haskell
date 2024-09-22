@@ -11,6 +11,7 @@ module Crypto.Paseto.Token.Encoding
 
     -- * Decoding
   , CommonDecodingError (..)
+  , renderCommonDecodingError
   , V3LocalDecodingError (..)
   , decodeTokenV3Local
   , V3PublicDecodingError (..)
@@ -38,11 +39,12 @@ import Crypto.Paseto.Token.Parser
   , parseTokenV4Public
   )
 import Crypto.Paseto.Token.Validation
-  ( ValidationError, ValidationRule, validate )
+  ( ValidationError, ValidationRule, renderValidationErrors, validate )
 import Data.Bifunctor ( first )
 import qualified Data.ByteString.Base64.URL as B64URL
 import Data.List.NonEmpty ( NonEmpty )
 import Data.Text ( Text )
+import qualified Data.Text as T
 import Data.Text.Encoding ( decodeUtf8 )
 import Prelude
 import Text.Parsec ( ParseError )
@@ -104,6 +106,13 @@ data CommonDecodingError
   | -- | Token claims validation error.
     CommonDecodingClaimsValidationError !(NonEmpty ValidationError)
   deriving stock (Show, Eq)
+
+-- | Render a 'CommonDecodingError' as 'Text'.
+renderCommonDecodingError :: CommonDecodingError -> Text
+renderCommonDecodingError err =
+  case err of
+    CommonDecodingParseError e -> T.pack (show e)
+    CommonDecodingClaimsValidationError e -> renderValidationErrors e
 
 assertValid :: [ValidationRule] -> Claims -> Either CommonDecodingError ()
 assertValid rs cs =
