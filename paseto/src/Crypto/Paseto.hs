@@ -67,6 +67,7 @@ module Crypto.Paseto
   , V4LocalDecodingError (..)
   , renderV4LocalDecodingError
   , V4PublicDecodingError (..)
+  , renderV4PublicDecodingError
     -- ** Claims
     -- *** Container type
     -- $claimsContainer
@@ -164,6 +165,7 @@ import Crypto.Paseto.Token.Encoding
   , renderV3LocalDecodingError
   , renderV3PublicDecodingError
   , renderV4LocalDecodingError
+  , renderV4PublicDecodingError
   )
 import Crypto.Paseto.Token.Validation as Validation
 

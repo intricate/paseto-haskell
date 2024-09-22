@@ -21,6 +21,7 @@ module Crypto.Paseto.Protocol.V4
   , v4PublicTokenHeader
   , sign
   , VerificationError (..)
+  , renderVerificationError
   , verify
   ) where
 
@@ -304,6 +305,21 @@ data VerificationError
   | -- | Error deserializing a verified collection of claims as JSON.
     VerificationClaimsDeserializationError !String
   deriving (Show, Eq)
+
+-- | Render a 'VerificationError' as 'Text'.
+renderVerificationError :: VerificationError -> Text
+renderVerificationError err =
+  case err of
+    VerificationInvalidFooterError _ _ ->
+      -- Since a footer could potentially be very long or some kind of
+      -- illegible structured data, we're not going to attempt to render those
+      -- values here.
+      "Token has an invalid footer."
+    VerificationCryptoError e ->
+      "Encountered a cryptographic error: " <> T.pack (show e)
+    VerificationInvalidSignatureError -> "Signature is invalid."
+    VerificationClaimsDeserializationError e ->
+      "Error deserializing claims from JSON: " <> T.pack (show e)
 
 -- | [PASETO version 4 cryptographic signature verification](https://github.com/paseto-standard/paseto-spec/blob/af79f25908227555404e7462ccdd8ce106049469/docs/01-Protocol-Versions/Version4.md#verify).
 verify

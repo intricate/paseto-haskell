@@ -22,6 +22,7 @@ module Crypto.Paseto.Token.Encoding
   , renderV4LocalDecodingError
   , decodeTokenV4Local
   , V4PublicDecodingError (..)
+  , renderV4PublicDecodingError
   , decodeTokenV4Public
 
     -- * Validated token
@@ -259,6 +260,13 @@ data V4PublicDecodingError
   | -- | Cryptographic signature verification error.
     V4PublicDecodingVerificationError !V4.VerificationError
   deriving stock (Show, Eq)
+
+-- | Render a 'V4PublicDecodingError' as 'Text'.
+renderV4PublicDecodingError :: V4PublicDecodingError -> Text
+renderV4PublicDecodingError err =
+  case err of
+    V4PublicDecodingCommonError e -> renderCommonDecodingError e
+    V4PublicDecodingVerificationError e -> V4.renderVerificationError e
 
 -- | Parse, 'V4.verify', and 'validate' a version 4 public PASETO token.
 decodeTokenV4Public
