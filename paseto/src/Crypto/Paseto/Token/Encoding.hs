@@ -16,6 +16,7 @@ module Crypto.Paseto.Token.Encoding
   , renderV3LocalDecodingError
   , decodeTokenV3Local
   , V3PublicDecodingError (..)
+  , renderV3PublicDecodingError
   , decodeTokenV3Public
   , V4LocalDecodingError (..)
   , decodeTokenV4Local
@@ -171,6 +172,13 @@ data V3PublicDecodingError
   | -- | Cryptographic signature verification error.
     V3PublicDecodingVerificationError !V3.VerificationError
   deriving stock (Show, Eq)
+
+-- | Render a 'V3PublicDecodingError' as 'Text'.
+renderV3PublicDecodingError :: V3PublicDecodingError -> Text
+renderV3PublicDecodingError err =
+  case err of
+    V3PublicDecodingCommonError e -> renderCommonDecodingError e
+    V3PublicDecodingVerificationError e -> V3.renderVerificationError e
 
 -- | Parse, 'V3.verify', and 'validate' a version 3 public PASETO token.
 decodeTokenV3Public
