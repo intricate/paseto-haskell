@@ -73,8 +73,11 @@ module Crypto.Paseto
   , Subject (..)
   , Audience (..)
   , Expiration (..)
+  , renderExpiration
   , NotBefore (..)
+  , renderNotBefore
   , IssuedAt (..)
+  , renderIssuedAt
   , TokenIdentifier (..)
     -- *** Custom/unregistered claim keys
   , UnregisteredClaimKey
@@ -135,6 +138,9 @@ import Crypto.Paseto.Token.Claim
   , TokenIdentifier (..)
   , UnregisteredClaimKey
   , mkUnregisteredClaimKey
+  , renderExpiration
+  , renderIssuedAt
+  , renderNotBefore
   , renderUnregisteredClaimKey
   )
 import Crypto.Paseto.Token.Claims ( Claims )
