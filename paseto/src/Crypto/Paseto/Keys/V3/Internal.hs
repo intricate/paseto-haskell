@@ -8,8 +8,10 @@ module Crypto.Paseto.Keys.V3.Internal
   , encodePointUncompressed
   , encodePointCompressed
   , UncompressedPointDecodingError (..)
+  , renderUncompressedPointDecodingError
   , decodePointUncompressed
   , CompressedPointDecodingError (..)
+  , renderCompressedPointDecodingError
   , decodePointCompressed
   , fromPrivateKey
   ) where
@@ -148,6 +150,25 @@ data UncompressedPointDecodingError
     UncompressedPointDecodingInvalidPointError !ECC.Point
   deriving stock (Show, Eq)
 
+-- | Render an 'UncompressedPointDecodingError' as 'Text'.
+renderUncompressedPointDecodingError :: UncompressedPointDecodingError -> Text
+renderUncompressedPointDecodingError err =
+  case err of
+    UncompressedPointDecodingInvalidPrefixError invalidPrefix ->
+      "Expected prefix "
+        <> T.pack (show (0x04 :: Word8))
+        <> " for uncompressed point, but encountered "
+        <> T.pack (show invalidPrefix)
+        <> "."
+    UncompressedPointDecodingInvalidLengthError expected actual ->
+      "Decoded point length is expected to be "
+        <> T.pack (show expected)
+        <> ", but it was "
+        <> T.pack (show actual)
+        <> "."
+    UncompressedPointDecodingInvalidPointError _ ->
+      "Decoded point is invalid for the curve."
+
 -- | Decode an elliptic curve point from its uncompressed binary format as
 -- defined by [SEC 1](https://www.secg.org/sec1-v2.pdf) and
 -- [RFC 5480 section 2.2](https://datatracker.ietf.org/doc/html/rfc5480#section-2.2).
@@ -196,6 +217,29 @@ data CompressedPointDecodingError
   | -- | Point is invalid for the curve.
     CompressedPointDecodingInvalidPointError !ECC.Point
   deriving stock (Show, Eq)
+
+-- | Render an 'CompressedPointDecodingError' as 'Text'.
+renderCompressedPointDecodingError :: CompressedPointDecodingError -> Text
+renderCompressedPointDecodingError err =
+  case err of
+    CompressedPointDecodingInvalidPrefixError invalidPrefix ->
+      "Expected prefix of either "
+        <> T.pack (show (0x02 :: Word8))
+        <> " or "
+        <> T.pack (show (0x03 :: Word8))
+        <> " for compressed point, but encountered "
+        <> T.pack (show invalidPrefix)
+        <> "."
+    CompressedPointDecodingInvalidLengthError expected actual ->
+      "Decoded point length is expected to be "
+        <> T.pack (show expected)
+        <> ", but it was "
+        <> T.pack (show actual)
+        <> "."
+    CompressedPointDecodingModularSquareRootError ->
+      "Failed to recover the x-coordinate from the compressed point."
+    CompressedPointDecodingInvalidPointError _ ->
+      "Decoded point is invalid for the curve."
 
 data EvenOrOddY
   = EvenY

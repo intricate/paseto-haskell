@@ -31,6 +31,7 @@ module Crypto.Paseto
   , fromSigningKey
     -- **** Errors
   , PublicKeyP384DecodingError (..)
+  , renderPublicKeyP384DecodingError
 
     -- * Tokens
   , Token (..)
@@ -104,6 +105,7 @@ import Crypto.Paseto.Keys.V3
   ( PublicKeyP384DecodingError (..)
   , ScalarDecodingError (..)
   , renderScalarDecodingError
+  , renderPublicKeyP384DecodingError
   )
 import Crypto.Paseto.Mode ( Purpose (..), Version (..) )
 import Crypto.Paseto.Token

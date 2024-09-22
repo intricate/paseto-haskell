@@ -27,6 +27,7 @@ module Crypto.Paseto.Keys.V3
   , Internal.CompressedPointDecodingError (..)
   , Internal.UncompressedPointDecodingError (..)
   , PublicKeyP384DecodingError (..)
+  , renderPublicKeyP384DecodingError
   , decodePublicKeyP384
   ) where
 
@@ -38,6 +39,7 @@ import Data.Bifunctor ( bimap )
 import Data.ByteArray ( ScrubbedBytes, constEq )
 import Data.ByteString ( ByteString )
 import qualified Data.ByteString as BS
+import Data.Text ( Text )
 import Prelude
 
 -- | Elliptic curve 'ECC.SEC_p384r1'.
@@ -147,6 +149,17 @@ data PublicKeyP384DecodingError
   | -- | Error decoding an uncompressed public key.
     PublicKeyP384DecodingUncompressedError !Internal.UncompressedPointDecodingError
   deriving stock (Show, Eq)
+
+-- | Render a 'PublicKeyP384DecodingError' as 'Text'.
+renderPublicKeyP384DecodingError :: PublicKeyP384DecodingError -> Text
+renderPublicKeyP384DecodingError err =
+  case err of
+    PublicKeyP384DecodingCompressedError e ->
+      "Failed to decode compressed public key: "
+        <> Internal.renderCompressedPointDecodingError e
+    PublicKeyP384DecodingUncompressedError e ->
+      "Failed to decode uncompressed public key: "
+        <> Internal.renderUncompressedPointDecodingError e
 
 -- | Decode a public key from either its compressed or uncompressed binary
 -- format as defined by [SEC 1](https://www.secg.org/sec1-v2.pdf) and
