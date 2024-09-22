@@ -17,6 +17,7 @@ module Crypto.Paseto.Protocol.V3
     -- * Public purpose
   , v3PublicTokenHeader
   , SigningError (..)
+  , renderSigningError
   , sign
   , signPure
   , VerificationError (..)
@@ -288,9 +289,15 @@ v3PublicTokenHeader = "v3.public."
 
 -- | PASETO version 3 cryptographic signing error.
 data SigningError
-  = -- | Scalar multiple, @k@, is zero.
-    SigningScalarMultipleIsZeroError
+  = -- | Random number, @k@, is zero.
+    SigningKIsZeroError
   deriving (Show, Eq)
+
+-- | Render a 'SigningError' as 'Text'.
+renderSigningError :: SigningError -> Text
+renderSigningError err =
+  case err of
+    SigningKIsZeroError -> "Parameter k is 0."
 
 -- | Pure variant of 'sign'.
 --
@@ -322,7 +329,7 @@ signPure k signingKey@(SigningKeyV3 (PrivateKeyP384 sk)) cs f i = do
 
   sig <-
     maybeToEither
-      SigningScalarMultipleIsZeroError
+      SigningKIsZeroError
       (Crypto.signWith k sk Crypto.SHA384 m2)
   let r :: Integer
       r = Crypto.sign_r sig

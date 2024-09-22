@@ -7,6 +7,7 @@ module Crypto.Paseto.Token.Build
   , renderV3LocalBuildError
   , buildTokenV3Local
   , V3PublicBuildError (..)
+  , renderV3PublicBuildError
   , buildTokenV3Public
   , buildTokenV4Local
   , buildTokenV4Public
@@ -86,6 +87,12 @@ newtype V3PublicBuildError
   = -- | Cryptographic signing error.
     V3PublicBuildSigningError V3.SigningError
   deriving stock (Show, Eq)
+
+-- | Render a 'V3PublicBuildError' as 'Text'.
+renderV3PublicBuildError :: V3PublicBuildError -> Text
+renderV3PublicBuildError err =
+  case err of
+    V3PublicBuildSigningError e -> V3.renderSigningError e
 
 -- | Build a version 3 public token.
 buildTokenV3Public :: BuildTokenParams -> SigningKey V3 -> ExceptT V3PublicBuildError IO (Token V3 Public)

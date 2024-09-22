@@ -49,6 +49,7 @@ module Crypto.Paseto
   , V3LocalBuildError (..)
   , renderV3LocalBuildError
   , V3PublicBuildError (..)
+  , renderV3PublicBuildError
     -- ** Encoding and decoding
   , encode
   , ValidatedToken (..)
@@ -121,6 +122,7 @@ import Crypto.Paseto.Token.Build
   , buildTokenV4Public
   , getDefaultBuildTokenParams
   , renderV3LocalBuildError
+  , renderV3PublicBuildError
   )
 import Crypto.Paseto.Token.Claim
   ( Audience (..)
