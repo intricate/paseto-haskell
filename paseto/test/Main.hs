@@ -9,7 +9,7 @@ import qualified Test.Crypto.Paseto.Protocol.V4
 import qualified Test.Crypto.Paseto.TestVectorTest
 import qualified Test.Crypto.Paseto.Token.Claim
 import qualified Test.Crypto.Paseto.Token.Claims
-import qualified Test.Crypto.Paseto.Token.Encoding
+import qualified Test.Crypto.Paseto.Token.Parser
 import qualified Test.Crypto.Paseto.Token.Validation
 
 main :: IO ()
@@ -22,6 +22,6 @@ main =
     , Test.Crypto.Paseto.TestVectorTest.tests
     , Test.Crypto.Paseto.Token.Claim.tests
     , Test.Crypto.Paseto.Token.Claims.tests
-    , Test.Crypto.Paseto.Token.Encoding.tests
+    , Test.Crypto.Paseto.Token.Parser.tests
     , Test.Crypto.Paseto.Token.Validation.tests
     ]

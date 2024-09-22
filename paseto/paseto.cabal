@@ -99,8 +99,8 @@ test-suite paseto-test
                        Test.Crypto.Paseto.Token.Claim.Gen
                        Test.Crypto.Paseto.Token.Claims
                        Test.Crypto.Paseto.Token.Claims.Gen
-                       Test.Crypto.Paseto.Token.Encoding
                        Test.Crypto.Paseto.Token.Gen
+                       Test.Crypto.Paseto.Token.Parser
                        Test.Crypto.Paseto.Token.Validation
                        Test.Crypto.Paseto.Token.Validation.Gen
                        Test.Gen

@@ -1,6 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 
-module Test.Crypto.Paseto.Token.Encoding
+module Test.Crypto.Paseto.Token.Parser
   ( tests
   ) where
 
