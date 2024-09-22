@@ -13,6 +13,7 @@ module Crypto.Paseto.Token.Encoding
   , CommonDecodingError (..)
   , renderCommonDecodingError
   , V3LocalDecodingError (..)
+  , renderV3LocalDecodingError
   , decodeTokenV3Local
   , V3PublicDecodingError (..)
   , decodeTokenV3Public
@@ -127,6 +128,13 @@ data V3LocalDecodingError
   | -- | Decryption error.
     V3LocalDecodingDecryptionError !V3.DecryptionError
   deriving stock (Show, Eq)
+
+-- | Render a 'V3LocalDecodingError' as 'Text'.
+renderV3LocalDecodingError :: V3LocalDecodingError -> Text
+renderV3LocalDecodingError err =
+  case err of
+    V3LocalDecodingCommonError e -> renderCommonDecodingError e
+    V3LocalDecodingDecryptionError e -> V3.renderDecryptionError e
 
 -- | Parse, 'V3.decrypt', and 'validate' a version 3 local PASETO token.
 decodeTokenV3Local

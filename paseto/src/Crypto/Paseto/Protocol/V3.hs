@@ -12,6 +12,7 @@ module Crypto.Paseto.Protocol.V3
   , encrypt
   , encryptPure
   , DecryptionError (..)
+  , renderDecryptionError
   , decrypt
 
     -- * Public purpose
@@ -61,8 +62,10 @@ import Data.Bits ( shiftL, (.|.) )
 import qualified Data.ByteArray as BA
 import Data.ByteString ( ByteString )
 import qualified Data.ByteString as BS
+import qualified Data.ByteString.Base16 as B16
 import Data.Text ( Text )
 import qualified Data.Text as T
+import qualified Data.Text.Encoding as TE
 import Prelude
 
 maybeToEither :: a -> Maybe b -> Either a b
@@ -207,11 +210,47 @@ data DecryptionError
     DecryptionCryptoError !Crypto.CryptoError
   | -- | Initialization vector is of an invalid size.
     DecryptionInvalidInitializationVectorSizeError
-      -- | Invalid initialization vector.
-      !ByteString
+      -- | Expected size.
+      !Int
+      -- | Actual size.
+      !Int
   | -- | Error deserializing a decrypted collection of claims as JSON.
     DecryptionClaimsDeserializationError !String
   deriving stock (Show, Eq)
+
+-- | Render a 'DecryptionError' as 'Text'.
+renderDecryptionError :: DecryptionError -> Text
+renderDecryptionError err =
+  case err of
+    DecryptionInvalidFooterError _ _ ->
+      -- Since a footer could potentially be very long or some kind of
+      -- illegible structured data, we're not going to attempt to render those
+      -- values here.
+      "Token has an invalid footer."
+    DecryptionInvalidHkdfNonceSizeError actual ->
+      "Expected nonce with a size of 32, but it was "
+        <> T.pack (show actual)
+        <> "."
+    DecryptionInvalidHmacSizeError actual ->
+      "Expected HMAC with a size of 48, but it was "
+        <> T.pack (show actual)
+        <> "."
+    DecryptionInvalidHmacError expected actual ->
+      "Expected HMAC value of "
+        <> TE.decodeUtf8 (B16.encode expected)
+        <> ", but encountered "
+        <> TE.decodeUtf8 (B16.encode actual)
+        <> "."
+    DecryptionCryptoError e ->
+      "Encountered a cryptographic error: " <> T.pack (show e)
+    DecryptionInvalidInitializationVectorSizeError expected actual ->
+      "Initialization vector length is expected to be "
+        <> T.pack (show expected)
+        <> ", but it was "
+        <> T.pack (show actual)
+        <> "."
+    DecryptionClaimsDeserializationError e ->
+      "Error deserializing claims from JSON: " <> T.pack (show e)
 
 -- | [PASETO version 3 decryption](https://github.com/paseto-standard/paseto-spec/blob/af79f25908227555404e7462ccdd8ce106049469/docs/01-Protocol-Versions/Version3.md#decrypt).
 decrypt
@@ -273,7 +312,10 @@ decrypt (SymmetricKeyV3 k) (TokenV3Local (Payload m) actualF) expectedF i = do
   when (t2 /= t) (Left $ DecryptionInvalidHmacError (BA.convert t2) (BA.convert t))
 
   aes256 <- first DecryptionCryptoError (mkAes256Cipher ek)
-  iv <- maybeToEither (DecryptionInvalidInitializationVectorSizeError n2) (Crypto.makeIV n2)
+  iv <-
+    maybeToEither
+      (DecryptionInvalidInitializationVectorSizeError (Crypto.blockSize aes256) (BS.length n2))
+      (Crypto.makeIV n2)
   let decrypted :: ByteString
       decrypted = Crypto.ctrCombine aes256 iv c
 
