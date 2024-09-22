@@ -89,7 +89,23 @@ module Crypto.Paseto
   , mkUnregisteredClaimKey
   , renderUnregisteredClaimKey
     -- ** Validation
-  , module Validation
+    -- *** Rules
+  , ValidationRule (..)
+  , ClaimMustExist (..)
+    -- **** Recommended default rules
+  , getDefaultValidationRules
+    -- **** Simple rules
+  , forAudience
+  , identifiedBy
+  , issuedBy
+  , notExpired
+  , subject
+  , validAt
+  , customClaimEq
+    -- *** Errors
+  , ValidationError (..)
+  , renderValidationError
+  , renderValidationErrors
   ) where
 
 import Crypto.Paseto.Keys
@@ -167,7 +183,21 @@ import Crypto.Paseto.Token.Encoding
   , renderV4LocalDecodingError
   , renderV4PublicDecodingError
   )
-import Crypto.Paseto.Token.Validation as Validation
+import Crypto.Paseto.Token.Validation
+  ( ClaimMustExist (..)
+  , ValidationError (..)
+  , ValidationRule (..)
+  , customClaimEq
+  , forAudience
+  , getDefaultValidationRules
+  , identifiedBy
+  , issuedBy
+  , notExpired
+  , renderValidationError
+  , renderValidationErrors
+  , subject
+  , validAt
+  )
 
 -- $claimsContainer
 --

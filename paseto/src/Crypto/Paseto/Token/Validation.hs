@@ -16,7 +16,7 @@ module Crypto.Paseto.Token.Validation
   , subject
   , validAt
   , customClaimEq
-    -- * Recommended default rules
+    -- ** Recommended default rules
   , getDefaultValidationRules
 
     -- * Validation
