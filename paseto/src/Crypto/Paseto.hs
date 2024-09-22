@@ -20,12 +20,16 @@ module Crypto.Paseto
   , bytesToSigningKeyV4
   , generateSigningKeyV3
   , generateSigningKeyV4
+    -- **** Errors
+  , ScalarDecodingError (..)
     -- *** Verification keys
   , VerificationKey (..)
   , verificationKeyToBytes
   , bytesToVerificationKeyV3
   , bytesToVerificationKeyV4
   , fromSigningKey
+    -- **** Errors
+  , PublicKeyP384DecodingError (..)
 
     -- * Tokens
   , Token (..)
@@ -39,6 +43,9 @@ module Crypto.Paseto
   , buildTokenV3Public
   , buildTokenV4Local
   , buildTokenV4Public
+    -- *** Errors
+  , V3LocalBuildError (..)
+  , V3PublicBuildError (..)
     -- ** Encoding and decoding
   , encode
   , ValidatedToken (..)
@@ -46,6 +53,12 @@ module Crypto.Paseto
   , decodeTokenV3Public
   , decodeTokenV4Local
   , decodeTokenV4Public
+    -- *** Errors
+  , CommonDecodingError (..)
+  , V3LocalDecodingError (..)
+  , V3PublicDecodingError (..)
+  , V4LocalDecodingError (..)
+  , V4PublicDecodingError (..)
     -- ** Claims
     -- *** Container type
     -- $claimsContainer
@@ -86,11 +99,15 @@ import Crypto.Paseto.Keys
   , symmetricKeyToBytes
   , verificationKeyToBytes
   )
+import Crypto.Paseto.Keys.V3
+  ( PublicKeyP384DecodingError (..), ScalarDecodingError (..) )
 import Crypto.Paseto.Mode ( Purpose (..), Version (..) )
 import Crypto.Paseto.Token
   ( Footer (..), ImplicitAssertion (..), Payload (..), Token (..) )
 import Crypto.Paseto.Token.Build
   ( BuildTokenParams (..)
+  , V3LocalBuildError (..)
+  , V3PublicBuildError (..)
   , buildTokenV3Local
   , buildTokenV3Public
   , buildTokenV4Local
@@ -112,7 +129,12 @@ import Crypto.Paseto.Token.Claim
   )
 import Crypto.Paseto.Token.Claims ( Claims )
 import Crypto.Paseto.Token.Encoding
-  ( ValidatedToken (..)
+  ( CommonDecodingError (..)
+  , V3LocalDecodingError (..)
+  , V3PublicDecodingError (..)
+  , V4LocalDecodingError (..)
+  , V4PublicDecodingError (..)
+  , ValidatedToken (..)
   , decodeTokenV3Local
   , decodeTokenV3Public
   , decodeTokenV4Local
