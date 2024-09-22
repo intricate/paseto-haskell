@@ -2,6 +2,7 @@
 module Crypto.Paseto.Token.Validation
   ( -- * Errors
     ValidationError (..)
+  , renderValidationError
 
     -- * Rules
   , ValidationRule (..)
@@ -32,6 +33,10 @@ import Crypto.Paseto.Token.Claim
   , Subject (..)
   , TokenIdentifier (..)
   , UnregisteredClaimKey
+  , renderClaimKey
+  , renderExpiration
+  , renderIssuedAt
+  , renderNotBefore
   )
 import Crypto.Paseto.Token.Claims
   ( Claims
@@ -78,6 +83,28 @@ data ValidationError
   | -- | Custom validation error.
     ValidationCustomError !Text
   deriving stock (Show, Eq)
+
+-- | Render a 'ValidationError' as 'Text'.
+renderValidationError :: ValidationError -> Text
+renderValidationError err =
+  case err of
+    ValidationClaimNotFoundError k ->
+      "\"" <> renderClaimKey k <> "\" claim does not exist"
+    ValidationInvalidClaimError k expected actual ->
+      "expected value \""
+        <> expected
+        <> "\" for \""
+        <> renderClaimKey k
+        <> "\" claim but encountered \""
+        <> actual
+        <> "\""
+    ValidationExpirationError exp ->
+      "token expired at " <> renderExpiration exp
+    ValidationIssuedAtError iat ->
+      "token is not issued until " <> renderIssuedAt iat
+    ValidationNotBeforeError nbf ->
+      "token is not valid before " <> renderNotBefore nbf
+    ValidationCustomError e -> e
 
 -- | Token claim validation rule.
 newtype ValidationRule = ValidationRule
