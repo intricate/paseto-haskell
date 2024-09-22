@@ -8,6 +8,7 @@ module Crypto.Paseto.Protocol.V3
   ( -- * Local purpose
     v3LocalTokenHeader
   , EncryptionError (..)
+  , renderEncryptionError
   , encrypt
   , encryptPure
   , DecryptionError (..)
@@ -59,6 +60,8 @@ import Data.Bits ( shiftL, (.|.) )
 import qualified Data.ByteArray as BA
 import Data.ByteString ( ByteString )
 import qualified Data.ByteString as BS
+import Data.Text ( Text )
+import qualified Data.Text as T
 import Prelude
 
 maybeToEither :: a -> Maybe b -> Either a b
@@ -87,9 +90,24 @@ data EncryptionError
     EncryptionCryptoError !Crypto.CryptoError
   | -- | Initialization vector is of an invalid size.
     EncryptionInvalidInitializationVectorSizeError
-      -- | Invalid initialization vector.
-      !ByteString
+      -- | Expected size.
+      !Int
+      -- | Actual size.
+      !Int
   deriving stock (Show, Eq)
+
+-- | Render an 'EncryptionError' as 'Text'.
+renderEncryptionError :: EncryptionError -> Text
+renderEncryptionError err =
+  case err of
+    EncryptionCryptoError e ->
+      "Encountered a cryptographic error: " <> T.pack (show e)
+    EncryptionInvalidInitializationVectorSizeError expected actual ->
+      "Initialization vector length is expected to be "
+        <> T.pack (show expected)
+        <> ", but it was "
+        <> T.pack (show actual)
+        <> "."
 
 -- | Pure variant of 'encrypt'.
 --
@@ -126,7 +144,10 @@ encryptPure n (SymmetricKeyV3 k) cs f i = do
       ak = Crypto.expand prk (authenticationKeyHkdfInfoPrefix <> n) 48
 
   aes256 <- first EncryptionCryptoError (mkAes256Cipher ek)
-  iv <- maybeToEither (EncryptionInvalidInitializationVectorSizeError n2) (Crypto.makeIV n2)
+  iv <-
+    maybeToEither
+      (EncryptionInvalidInitializationVectorSizeError (Crypto.blockSize aes256) (BS.length n2))
+      (Crypto.makeIV n2)
   let c :: ByteString
       c = Crypto.ctrCombine aes256 iv m
 

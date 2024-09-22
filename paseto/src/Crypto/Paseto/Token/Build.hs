@@ -4,6 +4,7 @@ module Crypto.Paseto.Token.Build
   ( BuildTokenParams (..)
   , getDefaultBuildTokenParams
   , V3LocalBuildError (..)
+  , renderV3LocalBuildError
   , buildTokenV3Local
   , V3PublicBuildError (..)
   , buildTokenV3Public
@@ -22,6 +23,7 @@ import Crypto.Paseto.Token.Claim
   ( Claim (..), Expiration (..), IssuedAt (..), NotBefore (..) )
 import Crypto.Paseto.Token.Claims ( Claims )
 import qualified Crypto.Paseto.Token.Claims as Claims
+import Data.Text ( Text )
 import Data.Time.Clock ( addUTCTime, getCurrentTime, secondsToNominalDiffTime )
 import Prelude hiding ( exp )
 
@@ -60,6 +62,12 @@ newtype V3LocalBuildError
   = -- | Encryption error.
     V3LocalBuildEncryptionError V3.EncryptionError
   deriving stock (Show, Eq)
+
+-- | Render a 'V3LocalBuildError' as 'Text'.
+renderV3LocalBuildError :: V3LocalBuildError -> Text
+renderV3LocalBuildError err =
+  case err of
+    V3LocalBuildEncryptionError e -> V3.renderEncryptionError e
 
 -- | Build a version 3 local token.
 buildTokenV3Local :: BuildTokenParams -> SymmetricKey V3 -> ExceptT V3LocalBuildError IO (Token V3 Local)

@@ -47,6 +47,7 @@ module Crypto.Paseto
   , buildTokenV4Public
     -- *** Errors
   , V3LocalBuildError (..)
+  , renderV3LocalBuildError
   , V3PublicBuildError (..)
     -- ** Encoding and decoding
   , encode
@@ -104,8 +105,8 @@ import Crypto.Paseto.Keys
 import Crypto.Paseto.Keys.V3
   ( PublicKeyP384DecodingError (..)
   , ScalarDecodingError (..)
-  , renderScalarDecodingError
   , renderPublicKeyP384DecodingError
+  , renderScalarDecodingError
   )
 import Crypto.Paseto.Mode ( Purpose (..), Version (..) )
 import Crypto.Paseto.Token
@@ -119,6 +120,7 @@ import Crypto.Paseto.Token.Build
   , buildTokenV4Local
   , buildTokenV4Public
   , getDefaultBuildTokenParams
+  , renderV3LocalBuildError
   )
 import Crypto.Paseto.Token.Claim
   ( Audience (..)
