@@ -3,13 +3,16 @@
 module Crypto.Paseto.Token.Build
   ( BuildTokenParams (..)
   , getDefaultBuildTokenParams
+  , V3LocalBuildError (..)
   , buildTokenV3Local
+  , V3PublicBuildError (..)
   , buildTokenV3Public
   , buildTokenV4Local
   , buildTokenV4Public
   ) where
 
 import Control.Monad.Except ( ExceptT )
+import Control.Monad.Trans.Except.Extra ( firstExceptT )
 import Crypto.Paseto.Keys ( SigningKey (..), SymmetricKey (..) )
 import Crypto.Paseto.Mode ( Purpose (..), Version (..) )
 import qualified Crypto.Paseto.Protocol.V3 as V3
@@ -52,9 +55,17 @@ getDefaultBuildTokenParams = do
     , btpImplicitAssertion = Nothing
     }
 
+-- | Error building a version 3 local PASETO token.
+newtype V3LocalBuildError
+  = -- | Encryption error.
+    V3LocalBuildEncryptionError V3.EncryptionError
+  deriving stock (Show, Eq)
+
 -- | Build a version 3 local token.
-buildTokenV3Local :: BuildTokenParams -> SymmetricKey V3 -> ExceptT V3.EncryptionError IO (Token V3 Local)
-buildTokenV3Local btp k = V3.encrypt k btpClaims btpFooter btpImplicitAssertion
+buildTokenV3Local :: BuildTokenParams -> SymmetricKey V3 -> ExceptT V3LocalBuildError IO (Token V3 Local)
+buildTokenV3Local btp k =
+  firstExceptT V3LocalBuildEncryptionError $
+    V3.encrypt k btpClaims btpFooter btpImplicitAssertion
   where
     BuildTokenParams
       { btpClaims
@@ -62,9 +73,17 @@ buildTokenV3Local btp k = V3.encrypt k btpClaims btpFooter btpImplicitAssertion
       , btpImplicitAssertion
       } = btp
 
+-- | Error building a version 3 public PASETO token.
+newtype V3PublicBuildError
+  = -- | Cryptographic signing error.
+    V3PublicBuildSigningError V3.SigningError
+  deriving stock (Show, Eq)
+
 -- | Build a version 3 public token.
-buildTokenV3Public :: BuildTokenParams -> SigningKey V3 -> ExceptT V3.SigningError IO (Token V3 Public)
-buildTokenV3Public btp sk = V3.sign sk btpClaims btpFooter btpImplicitAssertion
+buildTokenV3Public :: BuildTokenParams -> SigningKey V3 -> ExceptT V3PublicBuildError IO (Token V3 Public)
+buildTokenV3Public btp sk =
+  firstExceptT V3PublicBuildSigningError $
+    V3.sign sk btpClaims btpFooter btpImplicitAssertion
   where
     BuildTokenParams
       { btpClaims
