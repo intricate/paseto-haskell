@@ -8,8 +8,11 @@ module Crypto.Paseto.Token.Claim
   , Subject (..)
   , Audience (..)
   , Expiration (..)
+  , renderExpiration
   , NotBefore (..)
+  , renderNotBefore
   , IssuedAt (..)
+  , renderIssuedAt
   , TokenIdentifier (..)
 
     -- * Claim key
@@ -45,7 +48,9 @@ import qualified Data.Aeson.Types as Aeson
 import Data.Set ( Set )
 import qualified Data.Set as Set
 import Data.Text ( Text )
+import qualified Data.Text as T
 import Data.Time.Clock ( UTCTime )
+import Data.Time.Format.ISO8601 ( iso8601Show )
 import Prelude
 
 ------------------------------------------------------------------------------
@@ -72,15 +77,27 @@ newtype Expiration = Expiration
   { unExpiration :: UTCTime }
   deriving newtype (Show, Eq, ToJSON, FromJSON)
 
+-- | Render an 'Expiration' as 'Text'.
+renderExpiration :: Expiration -> Text
+renderExpiration (Expiration t) = T.pack (iso8601Show t)
+
 -- | Time from which a token should be considered valid.
 newtype NotBefore = NotBefore
   { unNotBefore :: UTCTime }
   deriving newtype (Show, Eq, ToJSON, FromJSON)
 
+-- | Render a 'NotBefore' as 'Text'.
+renderNotBefore :: NotBefore -> Text
+renderNotBefore (NotBefore t) = T.pack (iso8601Show t)
+
 -- | Time at which a token was issued.
 newtype IssuedAt = IssuedAt
   { unIssuedAt :: UTCTime }
   deriving newtype (Show, Eq, ToJSON, FromJSON)
+
+-- | Render an 'IssuedAt' as 'Text'.
+renderIssuedAt :: IssuedAt -> Text
+renderIssuedAt (IssuedAt t) = T.pack (iso8601Show t)
 
 -- | Token identifier.
 newtype TokenIdentifier = TokenIdentifier

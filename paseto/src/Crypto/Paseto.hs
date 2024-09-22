@@ -22,6 +22,7 @@ module Crypto.Paseto
   , generateSigningKeyV4
     -- **** Errors
   , ScalarDecodingError (..)
+  , renderScalarDecodingError
     -- *** Verification keys
   , VerificationKey (..)
   , verificationKeyToBytes
@@ -30,6 +31,7 @@ module Crypto.Paseto
   , fromSigningKey
     -- **** Errors
   , PublicKeyP384DecodingError (..)
+  , renderPublicKeyP384DecodingError
 
     -- * Tokens
   , Token (..)
@@ -45,7 +47,9 @@ module Crypto.Paseto
   , buildTokenV4Public
     -- *** Errors
   , V3LocalBuildError (..)
+  , renderV3LocalBuildError
   , V3PublicBuildError (..)
+  , renderV3PublicBuildError
     -- ** Encoding and decoding
   , encode
   , ValidatedToken (..)
@@ -55,10 +59,15 @@ module Crypto.Paseto
   , decodeTokenV4Public
     -- *** Errors
   , CommonDecodingError (..)
+  , renderCommonDecodingError
   , V3LocalDecodingError (..)
+  , renderV3LocalDecodingError
   , V3PublicDecodingError (..)
+  , renderV3PublicDecodingError
   , V4LocalDecodingError (..)
+  , renderV4LocalDecodingError
   , V4PublicDecodingError (..)
+  , renderV4PublicDecodingError
     -- ** Claims
     -- *** Container type
     -- $claimsContainer
@@ -69,8 +78,11 @@ module Crypto.Paseto
   , Subject (..)
   , Audience (..)
   , Expiration (..)
+  , renderExpiration
   , NotBefore (..)
+  , renderNotBefore
   , IssuedAt (..)
+  , renderIssuedAt
   , TokenIdentifier (..)
     -- *** Custom/unregistered claim keys
   , UnregisteredClaimKey
@@ -100,7 +112,11 @@ import Crypto.Paseto.Keys
   , verificationKeyToBytes
   )
 import Crypto.Paseto.Keys.V3
-  ( PublicKeyP384DecodingError (..), ScalarDecodingError (..) )
+  ( PublicKeyP384DecodingError (..)
+  , ScalarDecodingError (..)
+  , renderPublicKeyP384DecodingError
+  , renderScalarDecodingError
+  )
 import Crypto.Paseto.Mode ( Purpose (..), Version (..) )
 import Crypto.Paseto.Token
   ( Footer (..), ImplicitAssertion (..), Payload (..), Token (..) )
@@ -113,6 +129,8 @@ import Crypto.Paseto.Token.Build
   , buildTokenV4Local
   , buildTokenV4Public
   , getDefaultBuildTokenParams
+  , renderV3LocalBuildError
+  , renderV3PublicBuildError
   )
 import Crypto.Paseto.Token.Claim
   ( Audience (..)
@@ -125,6 +143,9 @@ import Crypto.Paseto.Token.Claim
   , TokenIdentifier (..)
   , UnregisteredClaimKey
   , mkUnregisteredClaimKey
+  , renderExpiration
+  , renderIssuedAt
+  , renderNotBefore
   , renderUnregisteredClaimKey
   )
 import Crypto.Paseto.Token.Claims ( Claims )
@@ -140,6 +161,11 @@ import Crypto.Paseto.Token.Encoding
   , decodeTokenV4Local
   , decodeTokenV4Public
   , encode
+  , renderCommonDecodingError
+  , renderV3LocalDecodingError
+  , renderV3PublicDecodingError
+  , renderV4LocalDecodingError
+  , renderV4PublicDecodingError
   )
 import Crypto.Paseto.Token.Validation as Validation
 

@@ -14,12 +14,14 @@ module Crypto.Paseto.Protocol.V4
   , encrypt
   , encryptPure
   , DecryptionError (..)
+  , renderDecryptionError
   , decrypt
 
     -- * Public purpose
   , v4PublicTokenHeader
   , sign
   , VerificationError (..)
+  , renderVerificationError
   , verify
   ) where
 
@@ -42,6 +44,10 @@ import Data.Bifunctor ( first )
 import qualified Data.ByteArray as BA
 import Data.ByteString ( ByteString )
 import qualified Data.ByteString as BS
+import qualified Data.ByteString.Base16 as B16
+import Data.Text ( Text )
+import qualified Data.Text as T
+import qualified Data.Text.Encoding as TE
 import Prelude
 
 ------------------------------------------------------------------------------
@@ -151,6 +157,32 @@ data DecryptionError
   | -- | Error deserializing a decrypted collection of claims as JSON.
     DecryptionClaimsDeserializationError !String
   deriving stock (Show, Eq)
+
+-- | Render a 'DecryptionError' as 'Text'.
+renderDecryptionError :: DecryptionError -> Text
+renderDecryptionError err =
+  case err of
+    DecryptionInvalidFooterError _ _ ->
+      -- Since a footer could potentially be very long or some kind of
+      -- illegible structured data, we're not going to attempt to render those
+      -- values here.
+      "Token has an invalid footer."
+    DecryptionInvalidNonceSizeError actual ->
+      "Expected nonce with a size of 32, but it was "
+        <> T.pack (show actual)
+        <> "."
+    DecryptionInvalidMacSizeError actual ->
+      "Expected MAC with a size of 32, but it was "
+        <> T.pack (show actual)
+        <> "."
+    DecryptionInvalidMacError expected actual ->
+      "Expected MAC value of "
+        <> TE.decodeUtf8 (B16.encode expected)
+        <> ", but encountered "
+        <> TE.decodeUtf8 (B16.encode actual)
+        <> "."
+    DecryptionClaimsDeserializationError e ->
+      "Error deserializing claims from JSON: " <> T.pack (show e)
 
 -- | [PASETO version 4 decryption](https://github.com/paseto-standard/paseto-spec/blob/af79f25908227555404e7462ccdd8ce106049469/docs/01-Protocol-Versions/Version4.md#decrypt).
 decrypt
@@ -273,6 +305,21 @@ data VerificationError
   | -- | Error deserializing a verified collection of claims as JSON.
     VerificationClaimsDeserializationError !String
   deriving (Show, Eq)
+
+-- | Render a 'VerificationError' as 'Text'.
+renderVerificationError :: VerificationError -> Text
+renderVerificationError err =
+  case err of
+    VerificationInvalidFooterError _ _ ->
+      -- Since a footer could potentially be very long or some kind of
+      -- illegible structured data, we're not going to attempt to render those
+      -- values here.
+      "Token has an invalid footer."
+    VerificationCryptoError e ->
+      "Encountered a cryptographic error: " <> T.pack (show e)
+    VerificationInvalidSignatureError -> "Signature is invalid."
+    VerificationClaimsDeserializationError e ->
+      "Error deserializing claims from JSON: " <> T.pack (show e)
 
 -- | [PASETO version 4 cryptographic signature verification](https://github.com/paseto-standard/paseto-spec/blob/af79f25908227555404e7462ccdd8ce106049469/docs/01-Protocol-Versions/Version4.md#verify).
 verify

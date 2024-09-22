@@ -4,8 +4,10 @@ module Crypto.Paseto.Token.Build
   ( BuildTokenParams (..)
   , getDefaultBuildTokenParams
   , V3LocalBuildError (..)
+  , renderV3LocalBuildError
   , buildTokenV3Local
   , V3PublicBuildError (..)
+  , renderV3PublicBuildError
   , buildTokenV3Public
   , buildTokenV4Local
   , buildTokenV4Public
@@ -22,6 +24,7 @@ import Crypto.Paseto.Token.Claim
   ( Claim (..), Expiration (..), IssuedAt (..), NotBefore (..) )
 import Crypto.Paseto.Token.Claims ( Claims )
 import qualified Crypto.Paseto.Token.Claims as Claims
+import Data.Text ( Text )
 import Data.Time.Clock ( addUTCTime, getCurrentTime, secondsToNominalDiffTime )
 import Prelude hiding ( exp )
 
@@ -61,6 +64,12 @@ newtype V3LocalBuildError
     V3LocalBuildEncryptionError V3.EncryptionError
   deriving stock (Show, Eq)
 
+-- | Render a 'V3LocalBuildError' as 'Text'.
+renderV3LocalBuildError :: V3LocalBuildError -> Text
+renderV3LocalBuildError err =
+  case err of
+    V3LocalBuildEncryptionError e -> V3.renderEncryptionError e
+
 -- | Build a version 3 local token.
 buildTokenV3Local :: BuildTokenParams -> SymmetricKey V3 -> ExceptT V3LocalBuildError IO (Token V3 Local)
 buildTokenV3Local btp k =
@@ -78,6 +87,12 @@ newtype V3PublicBuildError
   = -- | Cryptographic signing error.
     V3PublicBuildSigningError V3.SigningError
   deriving stock (Show, Eq)
+
+-- | Render a 'V3PublicBuildError' as 'Text'.
+renderV3PublicBuildError :: V3PublicBuildError -> Text
+renderV3PublicBuildError err =
+  case err of
+    V3PublicBuildSigningError e -> V3.renderSigningError e
 
 -- | Build a version 3 public token.
 buildTokenV3Public :: BuildTokenParams -> SigningKey V3 -> ExceptT V3PublicBuildError IO (Token V3 Public)

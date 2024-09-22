@@ -2,6 +2,8 @@
 module Crypto.Paseto.Token.Validation
   ( -- * Errors
     ValidationError (..)
+  , renderValidationError
+  , renderValidationErrors
 
     -- * Rules
   , ValidationRule (..)
@@ -32,6 +34,10 @@ import Crypto.Paseto.Token.Claim
   , Subject (..)
   , TokenIdentifier (..)
   , UnregisteredClaimKey
+  , renderClaimKey
+  , renderExpiration
+  , renderIssuedAt
+  , renderNotBefore
   )
 import Crypto.Paseto.Token.Claims
   ( Claims
@@ -51,6 +57,7 @@ import qualified Data.List as L
 import Data.List.NonEmpty ( NonEmpty )
 import qualified Data.List.NonEmpty as NE
 import Data.Text ( Text )
+import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
 import Data.Time.Clock ( UTCTime, getCurrentTime )
 import Prelude hiding ( exp, lookup )
@@ -78,6 +85,33 @@ data ValidationError
   | -- | Custom validation error.
     ValidationCustomError !Text
   deriving stock (Show, Eq)
+
+-- | Render a 'ValidationError' as 'Text'.
+renderValidationError :: ValidationError -> Text
+renderValidationError err =
+  case err of
+    ValidationClaimNotFoundError k ->
+      "\"" <> renderClaimKey k <> "\" claim does not exist"
+    ValidationInvalidClaimError k expected actual ->
+      "expected value \""
+        <> expected
+        <> "\" for \""
+        <> renderClaimKey k
+        <> "\" claim but encountered \""
+        <> actual
+        <> "\""
+    ValidationExpirationError exp ->
+      "token expired at " <> renderExpiration exp
+    ValidationIssuedAtError iat ->
+      "token is not issued until " <> renderIssuedAt iat
+    ValidationNotBeforeError nbf ->
+      "token is not valid before " <> renderNotBefore nbf
+    ValidationCustomError e -> e
+
+-- | Render a non-empty list of 'ValidationError's as 'Text'.
+renderValidationErrors :: NonEmpty ValidationError -> Text
+renderValidationErrors errs =
+  T.intercalate ", " (map renderValidationError (NE.toList errs))
 
 -- | Token claim validation rule.
 newtype ValidationRule = ValidationRule

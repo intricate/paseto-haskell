@@ -11,13 +11,18 @@ module Crypto.Paseto.Token.Encoding
 
     -- * Decoding
   , CommonDecodingError (..)
+  , renderCommonDecodingError
   , V3LocalDecodingError (..)
+  , renderV3LocalDecodingError
   , decodeTokenV3Local
   , V3PublicDecodingError (..)
+  , renderV3PublicDecodingError
   , decodeTokenV3Public
   , V4LocalDecodingError (..)
+  , renderV4LocalDecodingError
   , decodeTokenV4Local
   , V4PublicDecodingError (..)
+  , renderV4PublicDecodingError
   , decodeTokenV4Public
 
     -- * Validated token
@@ -38,11 +43,12 @@ import Crypto.Paseto.Token.Parser
   , parseTokenV4Public
   )
 import Crypto.Paseto.Token.Validation
-  ( ValidationError, ValidationRule, validate )
+  ( ValidationError, ValidationRule, renderValidationErrors, validate )
 import Data.Bifunctor ( first )
 import qualified Data.ByteString.Base64.URL as B64URL
 import Data.List.NonEmpty ( NonEmpty )
 import Data.Text ( Text )
+import qualified Data.Text as T
 import Data.Text.Encoding ( decodeUtf8 )
 import Prelude
 import Text.Parsec ( ParseError )
@@ -105,6 +111,13 @@ data CommonDecodingError
     CommonDecodingClaimsValidationError !(NonEmpty ValidationError)
   deriving stock (Show, Eq)
 
+-- | Render a 'CommonDecodingError' as 'Text'.
+renderCommonDecodingError :: CommonDecodingError -> Text
+renderCommonDecodingError err =
+  case err of
+    CommonDecodingParseError e -> T.pack (show e)
+    CommonDecodingClaimsValidationError e -> renderValidationErrors e
+
 assertValid :: [ValidationRule] -> Claims -> Either CommonDecodingError ()
 assertValid rs cs =
   case validate rs cs of
@@ -118,6 +131,13 @@ data V3LocalDecodingError
   | -- | Decryption error.
     V3LocalDecodingDecryptionError !V3.DecryptionError
   deriving stock (Show, Eq)
+
+-- | Render a 'V3LocalDecodingError' as 'Text'.
+renderV3LocalDecodingError :: V3LocalDecodingError -> Text
+renderV3LocalDecodingError err =
+  case err of
+    V3LocalDecodingCommonError e -> renderCommonDecodingError e
+    V3LocalDecodingDecryptionError e -> V3.renderDecryptionError e
 
 -- | Parse, 'V3.decrypt', and 'validate' a version 3 local PASETO token.
 decodeTokenV3Local
@@ -155,6 +175,13 @@ data V3PublicDecodingError
     V3PublicDecodingVerificationError !V3.VerificationError
   deriving stock (Show, Eq)
 
+-- | Render a 'V3PublicDecodingError' as 'Text'.
+renderV3PublicDecodingError :: V3PublicDecodingError -> Text
+renderV3PublicDecodingError err =
+  case err of
+    V3PublicDecodingCommonError e -> renderCommonDecodingError e
+    V3PublicDecodingVerificationError e -> V3.renderVerificationError e
+
 -- | Parse, 'V3.verify', and 'validate' a version 3 public PASETO token.
 decodeTokenV3Public
   :: VerificationKey V3
@@ -191,6 +218,13 @@ data V4LocalDecodingError
     V4LocalDecodingDecryptionError !V4.DecryptionError
   deriving stock (Show, Eq)
 
+-- | Render a 'V4LocalDecodingError' as 'Text'.
+renderV4LocalDecodingError :: V4LocalDecodingError -> Text
+renderV4LocalDecodingError err =
+  case err of
+    V4LocalDecodingCommonError e -> renderCommonDecodingError e
+    V4LocalDecodingDecryptionError e -> V4.renderDecryptionError e
+
 -- | Parse, 'V4.decrypt', and 'validate' a version 4 local PASETO token.
 decodeTokenV4Local
   :: SymmetricKey V4
@@ -226,6 +260,13 @@ data V4PublicDecodingError
   | -- | Cryptographic signature verification error.
     V4PublicDecodingVerificationError !V4.VerificationError
   deriving stock (Show, Eq)
+
+-- | Render a 'V4PublicDecodingError' as 'Text'.
+renderV4PublicDecodingError :: V4PublicDecodingError -> Text
+renderV4PublicDecodingError err =
+  case err of
+    V4PublicDecodingCommonError e -> renderCommonDecodingError e
+    V4PublicDecodingVerificationError e -> V4.renderVerificationError e
 
 -- | Parse, 'V4.verify', and 'validate' a version 4 public PASETO token.
 decodeTokenV4Public

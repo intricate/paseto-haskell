@@ -8,17 +8,21 @@ module Crypto.Paseto.Protocol.V3
   ( -- * Local purpose
     v3LocalTokenHeader
   , EncryptionError (..)
+  , renderEncryptionError
   , encrypt
   , encryptPure
   , DecryptionError (..)
+  , renderDecryptionError
   , decrypt
 
     -- * Public purpose
   , v3PublicTokenHeader
   , SigningError (..)
+  , renderSigningError
   , sign
   , signPure
   , VerificationError (..)
+  , renderVerificationError
   , verify
   ) where
 
@@ -59,6 +63,10 @@ import Data.Bits ( shiftL, (.|.) )
 import qualified Data.ByteArray as BA
 import Data.ByteString ( ByteString )
 import qualified Data.ByteString as BS
+import qualified Data.ByteString.Base16 as B16
+import Data.Text ( Text )
+import qualified Data.Text as T
+import qualified Data.Text.Encoding as TE
 import Prelude
 
 maybeToEither :: a -> Maybe b -> Either a b
@@ -87,9 +95,24 @@ data EncryptionError
     EncryptionCryptoError !Crypto.CryptoError
   | -- | Initialization vector is of an invalid size.
     EncryptionInvalidInitializationVectorSizeError
-      -- | Invalid initialization vector.
-      !ByteString
+      -- | Expected size.
+      !Int
+      -- | Actual size.
+      !Int
   deriving stock (Show, Eq)
+
+-- | Render an 'EncryptionError' as 'Text'.
+renderEncryptionError :: EncryptionError -> Text
+renderEncryptionError err =
+  case err of
+    EncryptionCryptoError e ->
+      "Encountered a cryptographic error: " <> T.pack (show e)
+    EncryptionInvalidInitializationVectorSizeError expected actual ->
+      "Initialization vector length is expected to be "
+        <> T.pack (show expected)
+        <> ", but it was "
+        <> T.pack (show actual)
+        <> "."
 
 -- | Pure variant of 'encrypt'.
 --
@@ -126,7 +149,10 @@ encryptPure n (SymmetricKeyV3 k) cs f i = do
       ak = Crypto.expand prk (authenticationKeyHkdfInfoPrefix <> n) 48
 
   aes256 <- first EncryptionCryptoError (mkAes256Cipher ek)
-  iv <- maybeToEither (EncryptionInvalidInitializationVectorSizeError n2) (Crypto.makeIV n2)
+  iv <-
+    maybeToEither
+      (EncryptionInvalidInitializationVectorSizeError (Crypto.blockSize aes256) (BS.length n2))
+      (Crypto.makeIV n2)
   let c :: ByteString
       c = Crypto.ctrCombine aes256 iv m
 
@@ -185,11 +211,47 @@ data DecryptionError
     DecryptionCryptoError !Crypto.CryptoError
   | -- | Initialization vector is of an invalid size.
     DecryptionInvalidInitializationVectorSizeError
-      -- | Invalid initialization vector.
-      !ByteString
+      -- | Expected size.
+      !Int
+      -- | Actual size.
+      !Int
   | -- | Error deserializing a decrypted collection of claims as JSON.
     DecryptionClaimsDeserializationError !String
   deriving stock (Show, Eq)
+
+-- | Render a 'DecryptionError' as 'Text'.
+renderDecryptionError :: DecryptionError -> Text
+renderDecryptionError err =
+  case err of
+    DecryptionInvalidFooterError _ _ ->
+      -- Since a footer could potentially be very long or some kind of
+      -- illegible structured data, we're not going to attempt to render those
+      -- values here.
+      "Token has an invalid footer."
+    DecryptionInvalidHkdfNonceSizeError actual ->
+      "Expected nonce with a size of 32, but it was "
+        <> T.pack (show actual)
+        <> "."
+    DecryptionInvalidHmacSizeError actual ->
+      "Expected HMAC with a size of 48, but it was "
+        <> T.pack (show actual)
+        <> "."
+    DecryptionInvalidHmacError expected actual ->
+      "Expected HMAC value of "
+        <> TE.decodeUtf8 (B16.encode expected)
+        <> ", but encountered "
+        <> TE.decodeUtf8 (B16.encode actual)
+        <> "."
+    DecryptionCryptoError e ->
+      "Encountered a cryptographic error: " <> T.pack (show e)
+    DecryptionInvalidInitializationVectorSizeError expected actual ->
+      "Initialization vector length is expected to be "
+        <> T.pack (show expected)
+        <> ", but it was "
+        <> T.pack (show actual)
+        <> "."
+    DecryptionClaimsDeserializationError e ->
+      "Error deserializing claims from JSON: " <> T.pack (show e)
 
 -- | [PASETO version 3 decryption](https://github.com/paseto-standard/paseto-spec/blob/af79f25908227555404e7462ccdd8ce106049469/docs/01-Protocol-Versions/Version3.md#decrypt).
 decrypt
@@ -251,7 +313,10 @@ decrypt (SymmetricKeyV3 k) (TokenV3Local (Payload m) actualF) expectedF i = do
   when (t2 /= t) (Left $ DecryptionInvalidHmacError (BA.convert t2) (BA.convert t))
 
   aes256 <- first DecryptionCryptoError (mkAes256Cipher ek)
-  iv <- maybeToEither (DecryptionInvalidInitializationVectorSizeError n2) (Crypto.makeIV n2)
+  iv <-
+    maybeToEither
+      (DecryptionInvalidInitializationVectorSizeError (Crypto.blockSize aes256) (BS.length n2))
+      (Crypto.makeIV n2)
   let decrypted :: ByteString
       decrypted = Crypto.ctrCombine aes256 iv c
 
@@ -267,9 +332,15 @@ v3PublicTokenHeader = "v3.public."
 
 -- | PASETO version 3 cryptographic signing error.
 data SigningError
-  = -- | Scalar multiple, @k@, is zero.
-    SigningScalarMultipleIsZeroError
+  = -- | Random number, @k@, is zero.
+    SigningKIsZeroError
   deriving (Show, Eq)
+
+-- | Render a 'SigningError' as 'Text'.
+renderSigningError :: SigningError -> Text
+renderSigningError err =
+  case err of
+    SigningKIsZeroError -> "Parameter k is 0."
 
 -- | Pure variant of 'sign'.
 --
@@ -301,7 +372,7 @@ signPure k signingKey@(SigningKeyV3 (PrivateKeyP384 sk)) cs f i = do
 
   sig <-
     maybeToEither
-      SigningScalarMultipleIsZeroError
+      SigningKIsZeroError
       (Crypto.signWith k sk Crypto.SHA384 m2)
   let r :: Integer
       r = Crypto.sign_r sig
@@ -361,6 +432,20 @@ data VerificationError
   | -- | Error deserializing a verified collection of claims as JSON.
     VerificationClaimsDeserializationError !String
   deriving (Show, Eq)
+
+-- | Render a 'VerificationError' as 'Text'.
+renderVerificationError :: VerificationError -> Text
+renderVerificationError err =
+  case err of
+    VerificationInvalidFooterError _ _ ->
+      -- Since a footer could potentially be very long or some kind of
+      -- illegible structured data, we're not going to attempt to render those
+      -- values here.
+      "Token has an invalid footer."
+    VerificationInvalidSignatureSizeError -> "Signature size is invalid."
+    VerificationInvalidSignatureError -> "Signature is invalid."
+    VerificationClaimsDeserializationError e ->
+      "Error deserializing claims from JSON: " <> T.pack (show e)
 
 -- | [PASETO version 3 cryptographic signature verification](https://github.com/paseto-standard/paseto-spec/blob/af79f25908227555404e7462ccdd8ce106049469/docs/01-Protocol-Versions/Version3.md#verify).
 verify
