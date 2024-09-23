@@ -237,7 +237,7 @@ renderCompressedPointDecodingError err =
         <> T.pack (show actual)
         <> "."
     CompressedPointDecodingModularSquareRootError ->
-      "Failed to recover the x-coordinate from the compressed point."
+      "Failed to recover the y-coordinate from the compressed point."
     CompressedPointDecodingInvalidPointError _ ->
       "Decoded point is invalid for the curve."
 
