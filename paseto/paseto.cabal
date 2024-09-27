@@ -18,6 +18,7 @@ category:            Cryptography
 homepage:            https://github.com/intricate/paseto-haskell
 bug-reports:         https://github.com/intricate/paseto-haskell/issues
 build-type:          Simple
+tested-with:         GHC == 9.4.8
 extra-source-files:  README.md
 extra-doc-files:     CHANGELOG.md
 
