@@ -141,7 +141,7 @@ prop_validAt = withTests 5000 . property $ do
   iatTimeDiff <- forAll $ genNominalDiffTime (Range.constant 1 100000)
   let iatTime = addUTCTime iatTimeDiff timeBeforeIssue
 
-  nbfTimeDiff <- forAll $ genNominalDiffTime (Range.constant 0 100000)
+  nbfTimeDiff <- forAll $ genNominalDiffTime (Range.constant 1 100000)
   let nbfTime = addUTCTime nbfTimeDiff iatTime
 
   expTimeDiff <- forAll $ genNominalDiffTime (Range.constant 1 100000)
@@ -174,14 +174,9 @@ prop_validAt = withTests 5000 . property $ do
     (validate [validAt badTimeBeforeIat] claims)
 
   -- Expected failure case (time is before `nbf`)
-  badTimeBeforeNbf <- forAll $
-    case nbfTimeDiff of
-      0 -> do
-        diff <- genNominalDiffTime (Range.constant 0 ((nominalDiffTimeToSecondsI iatTimeDiff) - 1))
-        pure (addUTCTime diff timeBeforeIssue)
-      _ -> do
-        diff <- genNominalDiffTime (Range.constant 0 ((nominalDiffTimeToSecondsI nbfTimeDiff) - 1))
-        pure (addUTCTime diff iatTime)
+  badTimeBeforeNbf <- forAll $ do
+    diff <- genNominalDiffTime (Range.constant 0 ((nominalDiffTimeToSecondsI nbfTimeDiff) - 1))
+    pure (addUTCTime diff iatTime)
   assertErrors
     (NE.singleton $ ValidationNotBeforeError nbf)
     (validate [validAt badTimeBeforeNbf] claims)
