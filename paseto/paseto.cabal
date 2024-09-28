@@ -4,9 +4,9 @@ version:             0.1.0.0
 synopsis:            Platform-Agnostic Security Tokens
 description:
   Haskell implementation of PASETO (Platform-Agnostic Security Tokens).
-  .
+
   The recommended entry point for this library is "Crypto.Paseto".
-  .
+
   For more information about this library and a rundown on how to use it,
   check out the
   [README on GitHub](https://github.com/intricate/paseto-haskell#readme).
