@@ -53,7 +53,6 @@ import Crypto.Paseto.Token.Claims
 import qualified Data.Aeson as Aeson
 import qualified Data.ByteString as BS
 import Data.Either ( lefts )
-import qualified Data.List as L
 import Data.List.NonEmpty ( NonEmpty )
 import qualified Data.List.NonEmpty as NE
 import Data.Text ( Text )
@@ -226,7 +225,7 @@ customClaimEq mustExist k expected = ValidationRule $ \cs ->
 -- At the moment, the only default rule is checking 'validAt' for the current
 -- system time ('getCurrentTime').
 getDefaultValidationRules :: IO [ValidationRule]
-getDefaultValidationRules = L.singleton . validAt <$> getCurrentTime
+getDefaultValidationRules = pure . validAt <$> getCurrentTime
 
 -- | Validate a list of rules against a collection of claims.
 --
