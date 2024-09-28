@@ -20,7 +20,6 @@ import Crypto.Paseto.Token.Validation
 import Data.Either ( isLeft )
 import Data.Fixed ( Fixed (..), Pico, resolution )
 import Data.List.NonEmpty ( NonEmpty )
-import qualified Data.List.NonEmpty as NE
 import Data.Time.Clock ( NominalDiffTime, addUTCTime, nominalDiffTimeToSeconds )
 import Hedgehog
   ( MonadTest
@@ -131,7 +130,7 @@ prop_notExpired = withTests 5000 . property $ do
     diff <- genNominalDiffTime (Range.constant 1 100000)
     pure (addUTCTime diff expClaimTime)
   assertErrors
-    (NE.singleton $ ValidationExpirationError exp)
+    (pure $ ValidationExpirationError exp)
     (validate [notExpired badTime] claims)
 
 prop_validAt :: Property
@@ -170,7 +169,7 @@ prop_validAt = withTests 5000 . property $ do
     diff <- genNominalDiffTime (Range.constant 0 ((nominalDiffTimeToSecondsI iatTimeDiff) - 1))
     pure (addUTCTime diff timeBeforeIssue)
   assertErrors
-    (NE.singleton $ ValidationIssuedAtError iat)
+    (pure $ ValidationIssuedAtError iat)
     (validate [validAt badTimeBeforeIat] claims)
 
   -- Expected failure case (time is before `nbf`)
@@ -178,7 +177,7 @@ prop_validAt = withTests 5000 . property $ do
     diff <- genNominalDiffTime (Range.constant 0 ((nominalDiffTimeToSecondsI nbfTimeDiff) - 1))
     pure (addUTCTime diff iatTime)
   assertErrors
-    (NE.singleton $ ValidationNotBeforeError nbf)
+    (pure $ ValidationNotBeforeError nbf)
     (validate [validAt badTimeBeforeNbf] claims)
 
   -- Expected failure case (expired claims)
@@ -186,7 +185,7 @@ prop_validAt = withTests 5000 . property $ do
     diff <- genNominalDiffTime (Range.constant 1 100000)
     pure (addUTCTime diff expTime)
   assertErrors
-    (NE.singleton $ ValidationExpirationError exp)
+    (pure $ ValidationExpirationError exp)
     (validate [validAt badTimeAfterExp] claims)
 
 ------------------------------------------------------------------------------
