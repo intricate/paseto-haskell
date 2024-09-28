@@ -38,6 +38,7 @@ library
                        -Wpartial-fields
                        -Wredundant-constraints
                        -Wunused-packages
+                       -Wno-unticked-promoted-constructors
 
   exposed-modules:     Crypto.Paseto
                        Crypto.Paseto.Keys
@@ -94,6 +95,7 @@ test-suite paseto-test
                        -Wincomplete-uni-patterns
                        -Wunused-imports
                        -Wunused-packages
+                       -Wno-unticked-promoted-constructors
 
   other-modules:       Test.Crypto.Paseto.Keys.Gen
                        Test.Crypto.Paseto.Keys.V3.Gen

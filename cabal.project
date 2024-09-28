@@ -4,7 +4,7 @@ packages:
   paseto
 
 package paseto
-  ghc-options: -Wall -Werror -Wredundant-constraints -Wincomplete-uni-patterns -Wincomplete-record-updates -Wpartial-fields -Wunused-imports
+  ghc-options: -Wall -Werror -Wredundant-constraints -Wincomplete-uni-patterns -Wincomplete-record-updates -Wpartial-fields -Wunused-imports -Wno-unticked-promoted-constructors
 
 -- Disable all tests by default.
 
