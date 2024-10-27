@@ -1,6 +1,6 @@
 cabal-version:       3.4
 name:                paseto
-version:             0.1.1.0
+version:             0.1.1.1
 synopsis:            Platform-Agnostic Security Tokens
 description:
   Haskell implementation of PASETO (Platform-Agnostic Security Tokens).

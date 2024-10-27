@@ -1,5 +1,9 @@
 # ChangeLog for paseto
 
+## 0.1.1.1 -- 2024-10-27
+
+- Add support for GHC 9.6.3.
+
 ## 0.1.1.0 -- 2024-10-27
 
 - Add support for GHC 8.10.1.
