@@ -27,7 +27,8 @@ module Crypto.Paseto.Protocol.V3
   ) where
 
 import Control.Monad ( unless, when )
-import Control.Monad.Except ( ExceptT, liftIO )
+import Control.Monad.Except ( ExceptT )
+import Control.Monad.IO.Class ( liftIO )
 import Control.Monad.Trans.Except.Extra ( hoistEither )
 import qualified Crypto.Cipher.AES as Crypto
 import qualified Crypto.Cipher.Types as Crypto
