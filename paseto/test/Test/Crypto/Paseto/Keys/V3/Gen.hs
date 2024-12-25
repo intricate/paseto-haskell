@@ -2,10 +2,12 @@ module Test.Crypto.Paseto.Keys.V3.Gen
   ( genScalarP384
   , genPrivateKeyP384
   , genKeyPairP384
+  , genPointCompression
   ) where
 
 import Crypto.Paseto.Keys.V3
-  ( PrivateKeyP384
+  ( PointCompression (..)
+  , PrivateKeyP384
   , PublicKeyP384
   , curveP384
   , fromPrivateKeyP384
@@ -39,3 +41,6 @@ genKeyPairP384 :: Gen (PublicKeyP384, PrivateKeyP384)
 genKeyPairP384 = toKeyPair <$> genPrivateKeyP384
   where
     toKeyPair privateKey = (fromPrivateKeyP384 privateKey, privateKey)
+
+genPointCompression :: Gen PointCompression
+genPointCompression = Gen.element [PointCompressed, PointUncompressed]

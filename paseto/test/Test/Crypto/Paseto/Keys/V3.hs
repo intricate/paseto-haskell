@@ -9,11 +9,12 @@ import Crypto.Paseto.Keys.V3
   , decodePublicKeyP384
   , encodePrivateKeyP384
   , encodePublicKeyP384
+  , encodePublicKeyP384'
   )
 import Hedgehog
   ( Property, checkParallel, discover, forAll, property, tripping )
 import Prelude
-import Test.Crypto.Paseto.Keys.V3.Gen ( genKeyPairP384 )
+import Test.Crypto.Paseto.Keys.V3.Gen ( genKeyPairP384, genPointCompression )
 
 tests :: IO Bool
 tests = checkParallel $$(discover)
@@ -33,3 +34,10 @@ prop_roundTrip_encodeDecodePublicKeyP384 :: Property
 prop_roundTrip_encodeDecodePublicKeyP384 = property $ do
   (pubKey, _) <- forAll genKeyPairP384
   tripping pubKey encodePublicKeyP384 decodePublicKeyP384
+
+-- | Test that 'encodePublicKeyP384\'' and 'decodePublicKeyP384' round trip.
+prop_roundTrip_encodeDecodePublicKeyP384WithPointCompression :: Property
+prop_roundTrip_encodeDecodePublicKeyP384WithPointCompression = property $ do
+  (pubKey, _) <- forAll genKeyPairP384
+  compression <- forAll genPointCompression
+  tripping pubKey (encodePublicKeyP384' compression) decodePublicKeyP384
