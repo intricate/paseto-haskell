@@ -191,7 +191,8 @@ decodePointUncompressed curvePrime bs = do
     Nothing -> Left (UncompressedPointDecodingInvalidLengthError expectedPointLen 0)
     Just (prefix, rest)
       | prefix == 0x04 ->
-          let (xBs, yBs) = BS.splitAt actualPointLen rest
+          let coordLen = BS.length rest `div` 2
+              (xBs, yBs) = BS.splitAt coordLen rest
               x = Crypto.Number.os2ip xBs
               y = Crypto.Number.os2ip yBs
               point = ECC.Point x y
