@@ -23,7 +23,9 @@ module Crypto.Paseto.Keys.V3
   , unPublicKeyP384
   , mkPublicKeyP384
   , fromPrivateKeyP384
+  , PointCompression (..)
   , encodePublicKeyP384
+  , encodePublicKeyP384'
   , Internal.CompressedPointDecodingError (..)
   , Internal.UncompressedPointDecodingError (..)
   , PublicKeyP384DecodingError (..)
@@ -133,14 +135,31 @@ fromPrivateKeyP384 :: PrivateKeyP384 -> PublicKeyP384
 fromPrivateKeyP384 (PrivateKeyP384 privateKey) =
   MkPublicKeyP384 (Internal.fromPrivateKey privateKey)
 
+-- | Elliptic curve point compression.
+data PointCompression
+  = -- | Elliptic curve point should be compressed.
+    PointCompressed
+  | -- | Elliptic curve point should not be compressed.
+    PointUncompressed
+  deriving stock (Show, Eq)
+
+-- | Encode an elliptic curve point into its binary format as defined by
+-- [SEC 1](https://www.secg.org/sec1-v2.pdf) and
+-- [RFC 5480 section 2.2](https://datatracker.ietf.org/doc/html/rfc5480#section-2.2).
+encodePublicKeyP384' :: PointCompression -> PublicKeyP384 -> ByteString
+encodePublicKeyP384' compression (PublicKeyP384 (ECC.ECDSA.PublicKey c p)) =
+  case c of
+    ECC.CurveFP curvePrime ->
+      case compression of
+        PointCompressed -> Internal.encodePointCompressed curvePrime p
+        PointUncompressed -> Internal.encodePointUncompressed curvePrime p
+    _ -> error "encodePublicKeyP384: impossible: secp384r1 curve is not a prime curve"
+
 -- | Encode an elliptic curve point into its compressed binary format as
 -- defined by [SEC 1](https://www.secg.org/sec1-v2.pdf) and
 -- [RFC 5480 section 2.2](https://datatracker.ietf.org/doc/html/rfc5480#section-2.2).
 encodePublicKeyP384 :: PublicKeyP384 -> ByteString
-encodePublicKeyP384 (PublicKeyP384 (ECC.ECDSA.PublicKey c p)) =
-  case c of
-    ECC.CurveFP curvePrime -> Internal.encodePointCompressed curvePrime p
-    _ -> error "encodePublicKeyP384: impossible: secp384r1 curve is not a prime curve"
+encodePublicKeyP384 = encodePublicKeyP384' PointCompressed
 
 -- | Error decoding a public key for curve 'ECC.SEC_p384r1'.
 data PublicKeyP384DecodingError
