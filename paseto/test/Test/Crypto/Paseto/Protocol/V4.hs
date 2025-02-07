@@ -49,10 +49,10 @@ prop_roundTrip_signVerify = property $ do
   tripping claims (\cs -> sign sk cs f i) (\t -> verify vk t f i)
 
 prop_golden_TokenV4Local :: Property
-prop_golden_TokenV4Local = goldenTestPaseto goldenTokenV4Local "test/golden/paseto/v4-local/golden"
+prop_golden_TokenV4Local = goldenTestPaseto goldenTokenV4Local "test/golden/paseto/v4-local/golden.txt"
 
 prop_golden_TokenV4Public :: Property
-prop_golden_TokenV4Public = goldenTestPaseto goldenTokenV4Public "test/golden/paseto/v4-public/golden"
+prop_golden_TokenV4Public = goldenTestPaseto goldenTokenV4Public "test/golden/paseto/v4-public/golden.txt"
 
 ------------------------------------------------------------------------------
 -- Golden examples

@@ -78,10 +78,10 @@ prop_roundTrip_signVerify = property$ do
         Right signed -> signed
 
 prop_golden_TokenV3Local :: Property
-prop_golden_TokenV3Local = goldenTestPaseto goldenTokenV3Local "test/golden/paseto/v3-local/golden"
+prop_golden_TokenV3Local = goldenTestPaseto goldenTokenV3Local "test/golden/paseto/v3-local/golden.txt"
 
 prop_golden_TokenV3Public :: Property
-prop_golden_TokenV3Public = goldenTestPaseto goldenTokenV3Public "test/golden/paseto/v3-public/golden"
+prop_golden_TokenV3Public = goldenTestPaseto goldenTokenV3Public "test/golden/paseto/v3-public/golden.txt"
 
 ------------------------------------------------------------------------------
 -- Golden examples
